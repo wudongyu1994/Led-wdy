@@ -400,10 +400,10 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		//timer.schedule(task, 5000, 60000); // 5s后执行task,经过60s再次执行
 		heartpacktask = new HeartpackTask();
 		warnpacktask = new WarnpackTask();
-		sendtime.schedule(cansendtask, 1000, 1000);
-		sendtime.schedule(serialssendtask, 1500, 1000);
-		time.schedule(heartpacktask, 60000, 60000);
-		time.schedule(warnpacktask, 6000, 20000);
+		sendtime.schedule(cansendtask, 1000, 1000);// 1s后执行 cansendtask,T=1s
+		sendtime.schedule(serialssendtask, 1500, 1000);// 1.5s后执行 serialssendtask,T=1s
+		time.schedule(heartpacktask, 60000, 60000);// 60s后执行 heartpacktask,T=60s
+		time.schedule(warnpacktask, 6000, 20000);// 6s后执行 warnpacktask,T=20s
 	}//end onCreate
 
 	//init USB to serials
