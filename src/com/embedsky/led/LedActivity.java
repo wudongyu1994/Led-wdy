@@ -167,15 +167,6 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 
 	private Context context;
 	protected static int sidcnt;
-	//video
-	/*public mLocalCaptureCallBack mlocalcapture;
-	private Context context;
-	private FunDeviceUtils fdu;
-	private FragmentManager fgm;
-	private FragmentTransaction fgt;
-	private DeviceLoginFragment devlogfragment;
-	private static String[] snapsid = new String[3];
-	protected static int sidcnt;*/
 	
 	//serials
 	private static final String ACTION_USB_PERMISSION = "com.embedsky.USB_PERMISSION";
@@ -369,33 +360,6 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		executorService.execute(mReadThread);
 		executorService.execute(mCanRev);
 
-        //video initial
-        /*sidcnt = 0;
-        FunSupport.getInstance().init(context);
-        SharedPreferences sharedPreferences = getSharedPreferences(SPNames.UserInfo.getValue(), Context.MODE_PRIVATE);
-        File f = new File(File.separator+"mnt");
-        if(!f.exists()){
-        //if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
-        	Utils.showToast(context,"no pic file");
-        	sharedPreferences.edit().putBoolean(UserInfoItems.hasES.getValue(), false).commit();
-        }else{
-        	sharedPreferences.edit().putBoolean(UserInfoItems.hasES.getValue(), true).commit();
-        	sharedPreferences.edit().putString(UserInfoItems.localPath.getValue(), 
-        		File.separator+"mnt"+File.separator+"xmlocal"+File.separator).commit();
-        		//Environment.getExternalStorageDirectory().toString()+File.separator+"xmlocal"+File.separator).commit();
-        }
-        if(findViewById(R.id.fragment_video) != null){
-        	if(savedInstanceState != null){
-        		return;
-        	}
-
-        	devlogfragment = new DeviceLoginFragment();
-        	devlogfragment.setArguments(getIntent().getExtras());
-        	fgm = getFragmentManager();
-        	fgt = fgm.beginTransaction();
-        	fgt.add(R.id.fragment_video, devlogfragment).commit();
-        	Log.d(LOG_TAG,"fragment create");
-        }*/
 		
 		//timer.schedule(task, 5000, 60000); // 5s后执行task,经过60s再次执行
 		heartpacktask = new HeartpackTask();
@@ -426,68 +390,6 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			Log.e(LOG_TAG, "ch340AndroidDriver not connected");
 		}
 	}
-
-	/*@Override
-	public void onAttachFragment(Fragment fragment){
-		try{
-			mlocalcapture = (mLocalCaptureCallBack) fragment;
-		} catch (ClassCastException e){
-			throw new ClassCastException(fragment.toString()+"must implements mLocalCaptureCallBack");
-		}
-		super.onAttachFragment(fragment);
-	}*/
-	
-	/*@Override
-	public void uploadPicture(String path){
-		File pic = new File(path);
-		if(pic.exists()){
-			try{
-				FileInputStream inputfile = new FileInputStream(pic);
-				FileOutputStream outputfile = new FileOutputStream(path+".b64");
-				BASE64Encoder base64encoder = new BASE64Encoder();
-				BASE64Decoder base64decoder = new BASE64Decoder();
-				try{
-					byte[] buf = new byte[inputfile.available()];
-					//Log.d(LOG_TAG, String.valueOf(inputfile.available()));
-					inputfile.read(buf);
-					inputfile.close();
-					String picdata = base64encoder.encode(buf);
-					Log.d(LOG_TAG,"encode success");
-					//Log.d(LOG_TAG, String.valueOf(picdata.length()));
-					picUpload picupload = new picUpload(picdata, "png");
-					byte[] outbuffer = picdata.getBytes();
-					Log.d(LOG_TAG,String.valueOf(outbuffer.length));
-					outputfile.write(outbuffer);
-					//outputfile.write(base64decoder.decodeBuffer(picdata));
-					outputfile.close();
-
-					httpUtils.doPostAsyn(picurl, picupload.picUploadGet(), new httpUtils.HttpCallBackListener() {
-	            		@Override
-	            		public void onFinish(String result) {
-	                		Message message = new Message();
-	                		message.what = MESSAGE_FILEUPLOAD;
-	                		message.obj=result;
-	                		handler.sendMessage(message);
-	            		}
-
-	            		@Override
-	            		public void onError(Exception e) {
-	            			//sidcnt = 0;
-	            		}
-
-	        		});
-
-				}catch(IOException e){
-					Log.e(LOG_TAG,"encode failed");
-				}
-			}catch(FileNotFoundException e){
-				//throw new FileNotFoundException("file not found");\
-				Log.e(LOG_TAG,"file not found");
-			}	
-		}else{
-			Log.d(LOG_TAG,"PIC not existed");
-		}
-	}*/
 
 	//can send
 	TimerTask cansendtask = new TimerTask(){
