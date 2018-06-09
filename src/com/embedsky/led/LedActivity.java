@@ -370,28 +370,23 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		time.schedule(warnpacktask, 6000, 20000);// 6s后执行 warnpacktask,T=20s
 	}//end onCreate
 
-	//init USB to serials
-	private void initUSB() {
-		UsbDevice device = ch340AndroidDriver.EnumerateDevice();// 枚举设备，获取USB设备
-		ch340AndroidDriver.OpenDevice(device);// 打开并连接USB
-		if (ch340AndroidDriver.isConnected())           {
-			boolean flags = ch340AndroidDriver.UartInit();// 初始化串口
-			if (!flags) {
-				Log.e(LOG_TAG, "Init Uart Error");
-				/*Toast.makeText(LedActivity.this, "Init Uart Error",
-						Toast.LENGTH_SHORT).show();*/
-			} else {// 配置串口
-				if (ch340AndroidDriver.SetConfig(baurt, (byte) 8, (byte) 1,
-						(byte) 0, (byte) 0)) {
-					Log.e(LOG_TAG, "Uart Configed");
-				}
-			}
-		} else {
-			Log.e(LOG_TAG, "ch340AndroidDriver not connected");
-		}
-	}
+    @Override
+    protected void onDestroy(){
+    	// fdu.OnDestory();//onDestroy
+    	ch340AndroidDriver.CloseDevice();
+    	unregisterReceiver(mUsbDeviceReceiver);
+    	lm1.removeUpdates(locationlistener);
+    	super.onDestroy();
+    }
 
-	//can send
+/******************************************************************************************
+* 以上时onCreate() & onDestroy()，以下是各种子线程定义
+*******************************************************************************************/
+	/*
+	 * can send 子线程
+	 * 线程内容：每过1s周期，进入该子线程，设置收集到的can数据，准备发送给服务器。
+	 * 注意：不需要在线程中更新UI，所以直接实现一个timerTask即可。
+	 */
 	TimerTask cansendtask = new TimerTask(){
 		@Override
 		public void run(){
@@ -414,7 +409,11 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		}
 	};
 
-	//serials send task
+	/*
+	 * serials send task 子线程
+	 * 线程内容：每过1s周期，进入该子线程，如果有需要发送的数据给终端门锁，则通过USB发送数据给USB收发模块。
+	 * 注意：不需要在线程中更新UI，所以直接实现一个timerTask即可。
+	 */
 	TimerTask serialssendtask = new TimerTask(){
 		@Override
 		public void run(){
@@ -437,7 +436,11 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		}
 	};
 
-	//heart package upload
+	/*
+	 * heart package upload 子线程
+	 * 线程内容：每过60s=1min周期，进入该子线程，上传心跳包。
+	 * 注意：需要在线程进行同时更新UI，所以通过message传递消息给handler来更新UI
+	 */
 	public class HeartpackTask extends TimerTask {
 		@Override
 		public void run(){
@@ -469,7 +472,11 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		}							
 	}
 
-	//warnpackage upload
+	/*
+	 * warnpackage upload 子线程
+	 * 线程内容：每过20s周期，进入该子线程，上传报警包。
+	 * 注意：需要在线程进行同时更新UI，所以通过message传递消息给handler来更新UI
+	 */
 	public class WarnpackTask extends TimerTask {
 		@Override
 		public void run() {
@@ -493,7 +500,11 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		}
 	}
 
-	//parameters upload
+	/*
+	 * parameters upload子线程
+	 * 线程内容：每过？？周期，进入该子线程，上传变量包。
+	 * 注意：需要在线程进行同时更新UI，所以通过message传递消息给handler来更新UI
+	 */
 	public class ParamspackTask extends TimerTask {
 		@Override
 		public void run() {
@@ -514,7 +525,11 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		}
 	}
 
-	//test upload
+	/*
+	 * test upload子线程
+	 * 线程内容：每过？？周期，进入该子线程，上传测试包。
+	 * 注意：需要在线程进行同时更新UI，所以通过message传递消息给handler来更新UI
+	 */
     public class TestTask extends TimerTask {
     	@Override
     	public void run(){
@@ -540,7 +555,10 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     	}
     }
 
-	//gps update
+    /*
+     * gps update函数
+     * 函数内容：每当GPS位置变化突破临界值后，记录下GPS数据。
+     */
 	private void updateLocation(Location location){
 		if(location != null){
 			//tLogView.append(location.toString());
@@ -557,7 +575,11 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		}
 	}
 
-	//serials read thread
+	/*
+	 * serials read thread子线程
+	 * 线程内容：检查接受到的来自终端的数据包正确性，如果正确才会继续发送message给sehandler处理。
+	 * 注意：需要在线程进行同时更新UI，所以通过message传递消息给sehandler来更新UI
+	 */
 	private class ReadThread implements Runnable{
 		@Override
 		public void run(){
@@ -773,7 +795,11 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		}
 	}
 
-	//can总线线程
+	/*
+	 * can总线子线程
+	 * 线程内容：
+	 * 注意：需要在线程进行同时更新UI，所以通过message传递消息给canhandler来更新UI
+	 */
 	private class CanRev implements Runnable{
 	    @Override
 	    public void run(){
@@ -801,7 +827,13 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     	}
     }
 
-    //serials handler
+/******************************************************************************************
+ * 以上是各种子线程定义，以下是各种handler
+*******************************************************************************************/
+    /*
+     * serials handler
+     * handler内容：获取USB接收到的数据，并更新UI
+     */
     Handler sehandler = new Handler(){
     	@Override
     	public void handleMessage(Message msg){	
@@ -987,96 +1019,11 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     		
     	}
     };	
-	
-	//http handler
-	Handler handler = new Handler(){
-		@Override
-    	public void handleMessage(Message msg) {
-    		switch(msg.what){
-    			case MESSAGE_HEARTPACKAGE:{
-    				String s =(String) msg.obj;
-	        		//Toast.makeText(LedActivity.this,s,Toast.LENGTH_SHORT).show();
-					//System.out.println(s);
-					Log.d(LOG_TAG, "heartpacktask"+s);
-					if(s != null){				
-						tx[5].setText(s+String.valueOf(cnt));	
-						cnt += 1;
-						//Toast.makeText(LedActivity.this,s,Toast.LENGTH_SHORT).show();
-					} 
-    			}break;
-    			case MESSAGE_FILEUPLOAD:{
-    				String s =(String) msg.obj;
-    				Log.d(LOG_TAG, s);
-    				try{
-    					JSONObject js = new JSONObject(s);
-    					JSONObject cont = js.getJSONObject("content");
-    					int picsid = cont.getInt("sid");
-    					/*if(sidcnt < 3){
-    						snapsid[sidcnt++] = String.valueOf(picsid);
-    					}*/
-    					/*if(sidcnt == 3){
-    						loginfo.snapshotSet(snapsid);
-    						sidcnt = 0;
-    						if(loginfo.typeflagGet() != null){
-    							Log.d(LOG_TAG, "typeflagGet"+loginfo.typeflagGet());
-    							if(loginfo.typeflagGet().equals("0")){
-    								loginfo.haswarnSet("1");
-    								loginfo.typeSet("1");
-									testmsgbuf.add(loginfo.logInfoGet());
-    							}else{
-    								loginfo.haswarnSet("1");
-    								loginfo.typeSet(loginfo.typeflagGet());
-    								warnmsgbuf.add(loginfo.logInfoGet());
-    							}
-    							loginfo.typeflagSet(null);
-    							
-    						}
-    						//TODO trig capture end and delete the capture file
-    						mlocalcapture.setCapturePath(2);
-    					}*/
-    					Log.d(LOG_TAG, String.valueOf(picsid)+"\t"+String.valueOf(sidcnt));
-    				}catch(JSONException e){
-    					e.printStackTrace();
-    				}		
-    			}break;
-    			case MESSAGE_GETUI:{
-    				String s =(String) msg.obj;
-    				Log.d(LOG_TAG, "getuicidup"+s);
-    			}break;
-    			case MESSAGE_WARNPACKAGE:{
-    				String s =(String) msg.obj;
-    				Log.d(LOG_TAG, "warn"+s);
-    			}break;
-    			case MESSAGE_PARAMSPACKAGE:{
-    				String s =(String) msg.obj;
-    				Log.d(LOG_TAG, "params"+s);
-    			}break;
-    			case MESSAGE_TESTPACKAGE: {
-    				String s =(String) msg.obj;
-    				Log.d(LOG_TAG, "test"+s);
-    			}break;
-    			case MESSAGE_LOCKCMDOPERATE: {
-    				String s =(String) msg.obj;
-    				Log.d(LOG_TAG, "lockcmd"+s);
-    			}break;
-    			case MESSAGE_OPPARAMS: {
-    				String s =(String) msg.obj;
-    				Log.d(LOG_TAG, "opparams"+s);
-    			}break;
-    			case MESSAGE_USB_INSERT: {
-    				initUSB();
-    				Log.d(LOG_TAG, "initUSB");
-    			}break;
-    			case MESSAGE_USB_UNINSERT: {
-    				ch340AndroidDriver.CloseDevice();
-    				Log.d(LOG_TAG, "CloseDevice");
-    			}break;
-    			default: break;
-    		}
-    	}
-	};
 
-	//can总线handler
+	/*
+	 * can handler
+	 * handler内容：获取can总线子线程发送的message，并更新UI
+	 */
 	public class mycanHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
@@ -1191,6 +1138,101 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
         }
     }
 
+	/*
+	 * http handler
+     * handler内容：获取各种其他类型的msg，并更新UI
+	 */
+	Handler handler = new Handler(){
+		@Override
+    	public void handleMessage(Message msg) {
+    		switch(msg.what){
+    			case MESSAGE_HEARTPACKAGE:{
+    				String s =(String) msg.obj;
+	        		//Toast.makeText(LedActivity.this,s,Toast.LENGTH_SHORT).show();
+					//System.out.println(s);
+					Log.d(LOG_TAG, "heartpacktask"+s);
+					if(s != null){				
+						tx[5].setText(s+String.valueOf(cnt));	
+						cnt += 1;
+						//Toast.makeText(LedActivity.this,s,Toast.LENGTH_SHORT).show();
+					} 
+    			}break;
+    			case MESSAGE_FILEUPLOAD:{
+    				String s =(String) msg.obj;
+    				Log.d(LOG_TAG, s);
+    				try{
+    					JSONObject js = new JSONObject(s);
+    					JSONObject cont = js.getJSONObject("content");
+    					int picsid = cont.getInt("sid");
+    					/*if(sidcnt < 3){
+    						snapsid[sidcnt++] = String.valueOf(picsid);
+    					}*/
+    					/*if(sidcnt == 3){
+    						loginfo.snapshotSet(snapsid);
+    						sidcnt = 0;
+    						if(loginfo.typeflagGet() != null){
+    							Log.d(LOG_TAG, "typeflagGet"+loginfo.typeflagGet());
+    							if(loginfo.typeflagGet().equals("0")){
+    								loginfo.haswarnSet("1");
+    								loginfo.typeSet("1");
+									testmsgbuf.add(loginfo.logInfoGet());
+    							}else{
+    								loginfo.haswarnSet("1");
+    								loginfo.typeSet(loginfo.typeflagGet());
+    								warnmsgbuf.add(loginfo.logInfoGet());
+    							}
+    							loginfo.typeflagSet(null);
+    							
+    						}
+    						//TODO trig capture end and delete the capture file
+    						mlocalcapture.setCapturePath(2);
+    					}*/
+    					Log.d(LOG_TAG, String.valueOf(picsid)+"\t"+String.valueOf(sidcnt));
+    				}catch(JSONException e){
+    					e.printStackTrace();
+    				}		
+    			}break;
+    			case MESSAGE_GETUI:{
+    				String s =(String) msg.obj;
+    				Log.d(LOG_TAG, "getuicidup"+s);
+    			}break;
+    			case MESSAGE_WARNPACKAGE:{
+    				String s =(String) msg.obj;
+    				Log.d(LOG_TAG, "warn"+s);
+    			}break;
+    			case MESSAGE_PARAMSPACKAGE:{
+    				String s =(String) msg.obj;
+    				Log.d(LOG_TAG, "params"+s);
+    			}break;
+    			case MESSAGE_TESTPACKAGE: {
+    				String s =(String) msg.obj;
+    				Log.d(LOG_TAG, "test"+s);
+    			}break;
+    			case MESSAGE_LOCKCMDOPERATE: {
+    				String s =(String) msg.obj;
+    				Log.d(LOG_TAG, "lockcmd"+s);
+    			}break;
+    			case MESSAGE_OPPARAMS: {
+    				String s =(String) msg.obj;
+    				Log.d(LOG_TAG, "opparams"+s);
+    			}break;
+    			case MESSAGE_USB_INSERT: {
+    				initUSB();
+    				Log.d(LOG_TAG, "initUSB");
+    			}break;
+    			case MESSAGE_USB_UNINSERT: {
+    				ch340AndroidDriver.CloseDevice();
+    				Log.d(LOG_TAG, "CloseDevice");
+    			}break;
+    			default: break;
+    		}
+    	}
+	};
+	
+/******************************************************************************************
+ * 以上是各种handler，以下是其他自定义函数
+*******************************************************************************************/
+	
     private final BroadcastReceiver mUsbDeviceReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -1217,17 +1259,6 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		}
 	};
     
-    @Override
-    protected void onDestroy(){
-    	// fdu.OnDestory();//onDestroy
-    	ch340AndroidDriver.CloseDevice();
-    	unregisterReceiver(mUsbDeviceReceiver);
-    	lm1.removeUpdates(locationlistener);
-    	super.onDestroy();
-    }
-
-    
-
 	// 自定义的事件监听器类，用来处理CheckBox选中和取消事件
 	public class MyClickListener implements OnClickListener {
 		@Override
@@ -1293,6 +1324,27 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			}
 			
 			return;
+		}
+	}
+
+	//init USB to serials
+	private void initUSB() {
+		UsbDevice device = ch340AndroidDriver.EnumerateDevice();// 枚举设备，获取USB设备
+		ch340AndroidDriver.OpenDevice(device);// 打开并连接USB
+		if (ch340AndroidDriver.isConnected())           {
+			boolean flags = ch340AndroidDriver.UartInit();// 初始化串口
+			if (!flags) {
+				Log.e(LOG_TAG, "Init Uart Error");
+				/*Toast.makeText(LedActivity.this, "Init Uart Error",
+						Toast.LENGTH_SHORT).show();*/
+			} else {// 配置串口
+				if (ch340AndroidDriver.SetConfig(baurt, (byte) 8, (byte) 1,
+						(byte) 0, (byte) 0)) {
+					Log.e(LOG_TAG, "Uart Configed");
+				}
+			}
+		} else {
+			Log.e(LOG_TAG, "ch340AndroidDriver not connected");
 		}
 	}
 
