@@ -189,7 +189,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	TextView[] tx = new TextView[18];
 	public static TextView tLogView;
 	
-	//退出按钮
+	//退出按钮  
 	Button btnQuit;
 
 	private LocationManager lm1;
