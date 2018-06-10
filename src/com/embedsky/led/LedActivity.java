@@ -12,10 +12,8 @@ import com.interfaces.mPictureCallBack;
 
 import com.embedsky.serialport.CH340AndroidDriver;
 
-
-import com.lib.funsdk.support.FunSupport;
-
-import com.Utils.FunDeviceUtils;
+// import com.lib.funsdk.support.FunSupport;
+// import com.Utils.FunDeviceUtils;
 import com.Utils.SharedPreferencesNames.SPNames;
 import com.Utils.SharedPreferencesNames.UserInfoItems;
 import com.Utils.Utils;
