@@ -27,7 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.security.InvalidParameterException;
-
+import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -185,10 +185,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	//CheckBox数组，用来存放3个test控件
 	CheckBox[] cb = new CheckBox[3];
 	TextView[] tx = new TextView[18];
+	
 	public static TextView tLogView;
 	
 	//退出按钮   
 	Button btnQuit;
+	Button btn1;
 
 	private LocationManager lm1;
 
@@ -230,6 +232,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		tLogView.setHorizontallyScrolling(false);
 		
 		btnQuit = (Button) findViewById(R.id.btnQuit);
+		btn1=(Button) this.findViewById(R.id.button1);
 		//初始化点击事件对象
 		MyClickListener myClickListern = new MyClickListener();
 		
@@ -269,7 +272,8 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 				
 			}
 		});
-
+		
+		
 		// lock初始化
 		//if (!ledInit()) {
 			//new AlertDialog.Builder(this).setTitle("init lock fail").show();
@@ -336,13 +340,23 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			Toast.makeText(LedActivity.this,"###error: GPS opened failed",Toast.LENGTH_SHORT).show();
 		}
 		
-		String bestProvider = lm1.getBestProvider(getCriteria(),true);
+		final String bestProvider = lm1.getBestProvider(getCriteria(),true);
 		Log.d("GPS", "bestProvider"+bestProvider);
 
 		location = lm1.getLastKnownLocation(bestProvider);
 		updateLocation(location);
 		lm1.requestLocationUpdates(bestProvider, 1000, 1, locationlistener);	//1000ms=1s,1m,
 
+		btn1.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				location = lm1.getLastKnownLocation(bestProvider);
+				updateLocation(location);
+			}
+		});
+		
 		//can总线初始化
 		mycanservice = IMycanService.Stub.asInterface(ServiceManager.getService("mycan"));
 		ret = -1;
