@@ -334,7 +334,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		lm1 = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
 		if(lm1.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-			Toast.makeText(LedActivity.this,"GPS has been opened!",Toast.LENGTH_SHORT).show();
+			//Toast.makeText(LedActivity.this,"GPS has been opened!",Toast.LENGTH_SHORT).show();
 		}
 		else{
 			Toast.makeText(LedActivity.this,"###error: GPS opened failed",Toast.LENGTH_SHORT).show();
@@ -1225,25 +1225,6 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 /******************************************************************************************
  * 以上是各种handler，以下是其他自定义函数
 *******************************************************************************************/
-	/*
-     * gps update函数
-     * 函数内容：每当GPS位置变化突破临界值后，记录下GPS数据。
-     */
-	private void updateLocation(Location location){
-		if(location != null){
-			//tLogView.append(location.toString());
-			gpsx = String.format("%.9f", location.getLongitude());
-			gpsy = String.format("%.9f", location.getLatitude());
-			speed = location.getSpeed();
-			String gpsInfo="gpsx: "+gpsx+"\t"+"gpsy: "+gpsy+"\t"+"gpsspeed: "+speed;
-			Log.d("GPS", "gpsx: "+gpsx+"\t"+"gpsy: "+gpsy+"\t"+"gpsspeed: "+speed);
-			tx[17].setText(gpsInfo);
-			loginfo.gpsSet(gpsx,gpsy);
-			loginfo.gpsspeedSet((int)speed);
-		}else{
-			Log.d("GPS", "no location object");
-		}
-	}
 	
     private final BroadcastReceiver mUsbDeviceReceiver = new BroadcastReceiver() {
 		@Override
@@ -1383,7 +1364,28 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		criteria.setPowerRequirement(Criteria.POWER_LOW);
 		return criteria;
 	}
-
+	
+	/*
+     * gps update函数
+     * 函数内容：每当GPS位置变化突破临界值后，记录下GPS数据。
+     */
+	private void updateLocation(Location location){
+		if(location != null){
+			//tLogView.append(location.toString());
+			gpsx = String.format("%.9f", location.getLongitude());
+			gpsy = String.format("%.9f", location.getLatitude());
+			speed = location.getSpeed();
+			String gpsInfo="gpsx: "+gpsx+"\t"+"gpsy: "+gpsy+"\t"+"gpsspeed: "+speed;
+			Log.d("GPS", gpsInfo);
+			Toast.makeText(LedActivity.this, gpsInfo, Toast.LENGTH_SHORT).show();
+			tx[17].setText(gpsInfo);
+			loginfo.gpsSet(gpsx,gpsy);
+			loginfo.gpsspeedSet((int)speed);
+		}else{
+			Log.d("GPS", "no location object");
+		}
+	}
+	//gps监听器
 	LocationListener locationlistener = new LocationListener(){
 
 			@Override
