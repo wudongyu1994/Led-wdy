@@ -232,7 +232,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		tLogView.setHorizontallyScrolling(false);
 		
 		btnQuit = (Button) findViewById(R.id.btnQuit);
-		btn1=(Button) this.findViewById(R.id.button1);
+		btn1=(Button) findViewById(R.id.button1);
 		//初始化点击事件对象
 		MyClickListener myClickListern = new MyClickListener();
 		

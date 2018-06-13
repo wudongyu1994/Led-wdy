@@ -5,7 +5,7 @@ LOCAL_MODULE_TAGS := optional
 
 LOCAL_SRC_FILES := $(call all-subdir-java-files)
 
-LOCAL_PACKAGE_NAME := Led-wdy102
+LOCAL_PACKAGE_NAME := Led-wdy
 LOCAL_CERTIFICATE := platform
 
 LOCAL_STATIC_JAVA_LIBRARIES := android-support-v4 GetuiSDK2.10.2.0 commons-lang-2.5 Core LibFunSDK stickygridheaders sun.misc.BASE64Decoder BASE64 dewarp 

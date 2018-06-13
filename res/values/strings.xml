@@ -2,7 +2,7 @@
 <resources>
 
     <string name="hello">Hello World, LockActivity!</string>
-    <string name="app_name">Led-wdy102</string>
+    <string name="app_name">Led-wdy</string>
     <string name="app_welcome">Welcome</string>
     <string name="cb_Lock1">LOCK1</string>
     <string name="cb_Lock2">LOCK2</string>
