@@ -285,9 +285,14 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		cnt = 0;
 		
 		//个推初始化
-		PushManager.getInstance().initialize(this.getApplicationContext(),GetuiPushService.class);
+		PushManager push=PushManager.getInstance();
+		push.initialize(this.getApplicationContext(),GetuiPushService.class);
+		push.registerPushIntentService(this.getApplicationContext(),ReIntentService.class);
+		String cid=null;
+		// cid=push.getClientid(this.getApplicationContext());
+		/*PushManager.getInstance().initialize(this.getApplicationContext(),GetuiPushService.class);
 		PushManager.getInstance().registerPushIntentService(this.getApplicationContext(),ReIntentService.class);
-		String cid = PushManager.getInstance().getClientid(this.getApplicationContext());
+		String cid = PushManager.getInstance().getClientid(this.getApplicationContext());*/
 		//String cid = new String();
 		if(cid != null){
 			//tLogView.append(cid);
@@ -343,10 +348,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		final String bestProvider = lm1.getBestProvider(getCriteria(),true);
 		Log.d("GPS", "bestProvider"+bestProvider);
 
-		location = lm1.getLastKnownLocation(bestProvider);
-		updateLocation(location);
-		lm1.requestLocationUpdates(bestProvider, 1000, 1, locationlistener);	//1000ms=1s,1m,
-
+		if(bestProvider!=null || !"".equals(bestProvider.trim())){
+			location = lm1.getLastKnownLocation(bestProvider);
+			updateLocation(location);
+			lm1.requestLocationUpdates(bestProvider, 1000, 1, locationlistener);	//1000ms=1s,1m,
+		}
+		
 		btn1.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
