@@ -353,7 +353,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			updateLocation(location);
 			lm1.requestLocationUpdates(bestProvider, 1000, 1, locationlistener);	//1000ms=1s,1m,
 		}
-		
+
 		btn1.setOnClickListener(new View.OnClickListener() {
 			
 			@Override

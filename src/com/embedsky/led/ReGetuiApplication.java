@@ -68,6 +68,7 @@ public class ReGetuiApplication extends Application {
         		try {
     				JSONObject command = new JSONObject((String) msg.obj);
     				type = command.getString("type");
+
                     Log.d(LOG_TAG, ""+type);
                     int tp = Integer.parseInt(type);
     				switch(tp){
@@ -181,7 +182,7 @@ public class ReGetuiApplication extends Application {
                             }else{
                                 sid = "0";
                             }    
-                            
+                            reparams.put("isTest", command.getString("isTest", "0"));
 			    			reparams.put("sid", sid);
 			    			//reparams.put("type", type);
 			    			//reparams.put("operate", String.valueOf(ope));
