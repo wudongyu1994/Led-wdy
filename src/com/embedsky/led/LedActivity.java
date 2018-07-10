@@ -288,15 +288,15 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		PushManager push=PushManager.getInstance();
 		push.initialize(this.getApplicationContext(),GetuiPushService.class);
 		push.registerPushIntentService(this.getApplicationContext(),ReIntentService.class);
-		String cid=null;
+		// String cid=null;
 		// cid=push.getClientid(this.getApplicationContext());
-		/*PushManager.getInstance().initialize(this.getApplicationContext(),GetuiPushService.class);
+		PushManager.getInstance().initialize(this.getApplicationContext(),GetuiPushService.class);
 		PushManager.getInstance().registerPushIntentService(this.getApplicationContext(),ReIntentService.class);
-		String cid = PushManager.getInstance().getClientid(this.getApplicationContext());*/
+		String cid = PushManager.getInstance().getClientid(this.getApplicationContext());
 		//String cid = new String();
 		if(cid != null){
 			//tLogView.append(cid);
-			cidparams.put("trucknumber","川C5678");
+			cidparams.put("trucknumber","川C1357");
 			cidparams.put("type", "100");
 			cidparams.put("cid", cid);
 			Log.d(LOG_TAG, cid);
@@ -314,6 +314,9 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	            public void onError(Exception e) {
 	            }
 	        });
+		}
+		else{
+			Log.d(LOG_TAG,"cid failed!");
 		}
 
 		//serials initial
@@ -552,6 +555,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     public class TestTask extends TimerTask {
     	@Override
     	public void run(){
+    		Log.d(LOG_TAG, "testtask");
+    		if(testmsgbuf.isEmpty()){
+    			logInfo logInfo_test = new logInfo();
+    			testmsgbuf.add(logInfo_test.logInfoGet());
+
+    		}
 			if(!testmsgbuf.isEmpty()){
 				Log.d(LOG_TAG, testmsgbuf.get(0).toString());
 				httpUtils.doPostAsyn(testurl, testmsgbuf.get(0), new httpUtils.HttpCallBackListener() {
@@ -870,7 +879,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 							}
 						}
 	    			}else if(data.get(1).equals("05")){
-	    				opparams.put("trucknumber", "川C5678");
+	    				opparams.put("trucknumber", "川C1357");
 	    				if(devid.equals("55667788")){	
 		    				if(data.get(9).equals("00")){
 								//TODO
@@ -1164,11 +1173,11 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     					JSONObject js = new JSONObject(s);
     					JSONObject cont = js.getJSONObject("content");
     					int picsid = cont.getInt("sid");
-    					/*if(sidcnt < 3){
-    						snapsid[sidcnt++] = String.valueOf(picsid);
-    					}*/
-    					/*if(sidcnt == 3){
-    						loginfo.snapshotSet(snapsid);
+    					// if(sidcnt < 3){
+    					// 	snapsid[sidcnt++] = String.valueOf(picsid);
+    					// }
+    					if(sidcnt == 3){
+    						// loginfo.snapshotSet(snapsid);
     						sidcnt = 0;
     						if(loginfo.typeflagGet() != null){
     							Log.d(LOG_TAG, "typeflagGet"+loginfo.typeflagGet());
@@ -1185,8 +1194,8 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     							
     						}
     						//TODO trig capture end and delete the capture file
-    						mlocalcapture.setCapturePath(2);
-    					}*/
+    						// mlocalcapture.setCapturePath(2);
+    					}
     					Log.d(LOG_TAG, String.valueOf(picsid)+"\t"+String.valueOf(sidcnt));
     				}catch(JSONException e){
     					e.printStackTrace();

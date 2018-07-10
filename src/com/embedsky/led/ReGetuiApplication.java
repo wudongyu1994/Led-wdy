@@ -182,7 +182,8 @@ public class ReGetuiApplication extends Application {
                             }else{
                                 sid = "0";
                             }    
-                            reparams.put("isTest", command.getString("isTest", "0"));
+                            reparams.put("isTest", command.getString("isTest"));
+                            reparams.put("type", operate);
 			    			reparams.put("sid", sid);
 			    			//reparams.put("type", type);
 			    			//reparams.put("operate", String.valueOf(ope));

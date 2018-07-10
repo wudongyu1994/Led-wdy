@@ -44,16 +44,23 @@ public class logInfo{
 	
 	public logInfo(){
 		super();
-		trucknumber = "川C5678";
-		haswarn = "0";
-		warntype = "0";
-		speed = 0;
-		gpsspeed = 0;
+		logtype = 0;
+		trucknumber = "川C1357";
 		gpsx = "0";
 		gpsy = "0";
-		fuelvol = "0";
+		speed = 0;
+		gpsspeed = 0;
 		distance = "0";
-		logtype = 0;
+		fuelvol = "0";
+		tirePressure lefttire = new tirePressure("lefttirepressure", "233", "lefttiretemp", "55");
+		tirePressure righttire = new tirePressure("righttirepressure", "244", "righttiretemp", "66");
+		tire_val = new tirePressure[2];
+		tire_val[0] = lefttire;
+		tire_val[1] = righttire;
+		haswarn = "0";
+		warntype = "0";
+		lock_val = "0-0-0-1-1";
+		pow_val = "11-22-33-44-55";
 		leakstatus = "128";
 	}
 
