@@ -7,7 +7,6 @@ import com.embedsky.hicamera.base.LogUtil;
 import com.embedsky.hicamera.bean.DownLoadTasks;
 import com.embedsky.hicamera.bean.HiDataValue;
 import com.embedsky.hicamera.bean.MyCamera;
-import com.embedsky.hicamera.main.MainActivity;
 import com.embedsky.httpUtils.httpUtils;
 import com.embedsky.httpUtils.lockStruct;
 import com.embedsky.httpUtils.logInfo;
@@ -25,7 +24,7 @@ import com.hichip.sdk.HiChipSDK.HiChipInitCallback;
 import com.Utils.SharedPreferencesNames.SPNames;
 import com.Utils.SharedPreferencesNames.UserInfoItems;
 import com.Utils.Utils;
-
+ 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,7 +52,7 @@ import org.json.JSONException;
 
 import Decoder.BASE64Decoder;
 import Decoder.BASE64Encoder;
-import android.annotation.SuppressLint;
+// import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -375,6 +374,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/ {
 				// TODO Auto-generated method stub
 				location = lm1.getLastKnownLocation(bestProvider);
 				updateLocation(location);
+				DownLoadTasks.addTask(System.currentTimeMillis() - 60 * 1000, System.currentTimeMillis() + 60 * 1000);
 			}
 		});
 
@@ -1174,7 +1174,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/ {
     //arg1
     public final static int HANDLE_MESSAGE_ARG1_ADDCAMERA_FAIL = 0x100001;
     public final static int HANDLE_MESSAGE_ARG1_ADDCAMERA_COMPELETE = 0x100002;
-    @SuppressLint("HandlerLeak")
+    // @SuppressLint("HandlerLeak")
     private Handler hicamhandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -1471,5 +1471,6 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/ {
             }
         });
     }
+
 
 }

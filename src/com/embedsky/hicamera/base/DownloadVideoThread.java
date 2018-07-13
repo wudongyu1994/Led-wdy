@@ -1,6 +1,6 @@
 package com.embedsky.hicamera.base;
 
-import android.annotation.SuppressLint;
+// import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Message;
 
@@ -50,13 +50,13 @@ public class DownloadVideoThread extends Thread implements ICameraIOSessionCallb
         myCamera.unregisterDownloadListener(this);
     }
 
-    @SuppressLint("HandlerLeak")
-    private final Handler inHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-        }
-    };
+    // @SuppressLint("HandlerLeak")
+    // private final Handler inHandler = new Handler(){
+    //     @Override
+    //     public void handleMessage(Message msg) {
+    //         super.handleMessage(msg);
+    //     }
+    // };
     private final Object SynObject = new Object();
     @Override
     public void run() {
