@@ -1,4 +1,4 @@
-package com.embedsky.hicamera.bean;
+package cn.assassing.camtest.bean;
 
 import com.hichip.content.HiChipDefines;
 

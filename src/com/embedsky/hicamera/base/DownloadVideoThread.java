@@ -1,8 +1,6 @@
-package com.embedsky.hicamera.base;
+package cn.assassing.camtest.base;
 
-// import android.annotation.SuppressLint;
 import android.os.Handler;
-import android.os.Message;
 
 import com.hichip.callback.ICameraDownloadCallback;
 import com.hichip.callback.ICameraIOSessionCallback;
@@ -12,18 +10,18 @@ import com.hichip.control.HiCamera;
 import java.io.File;
 import java.util.List;
 
-import com.embedsky.hicamera.bean.DownLoadTasks;
-import com.embedsky.hicamera.bean.DownloadTask;
-import com.embedsky.hicamera.bean.MyCamera;
-import com.embedsky.hicamera.bean.MyFileInfo;
+import cn.assassing.camtest.bean.DownLoadTasks;
+import cn.assassing.camtest.bean.DownloadTask;
+import cn.assassing.camtest.bean.MyCamera;
+import cn.assassing.camtest.bean.MyFileInfo;
 
 public class DownloadVideoThread extends Thread implements ICameraIOSessionCallback, ICameraDownloadCallback {
 
-    private int TaskIndex;
     private int status;
     private DownloadTask downLoadTask;
     private MyCamera myCamera;
     private boolean downloadFlag;
+    private int lastrate;
     private Handler outHandler;
 
     private static int STATUS_INIT = 0;
@@ -35,7 +33,6 @@ public class DownloadVideoThread extends Thread implements ICameraIOSessionCallb
     private static int STATUS_EXCEPTION = 6;
 
     public DownloadVideoThread(Handler outHandler) {
-        TaskIndex = 0;
         status = STATUS_INIT;
         downloadFlag = false;
         this.outHandler = outHandler;
@@ -50,43 +47,35 @@ public class DownloadVideoThread extends Thread implements ICameraIOSessionCallb
         myCamera.unregisterDownloadListener(this);
     }
 
-    // @SuppressLint("HandlerLeak")
-    // private final Handler inHandler = new Handler(){
-    //     @Override
-    //     public void handleMessage(Message msg) {
-    //         super.handleMessage(msg);
-    //     }
-    // };
-    private final Object SynObject = new Object();
     @Override
     public void run() {
-        synchronized (SynObject){
-            try {
-                status = STATUS_RUNNING;
-                while(true){
-                    if(this.isInterrupted()){
-                        break;
-                    }
-                    if(DownLoadTasks.downloadTasks.size() > 0){
-                        this.downLoadTask = DownLoadTasks.downloadTasks.get(TaskIndex);
-                        LogUtil.d("now Task:"+downLoadTask);
-                        boolean downloaded = true;
-                        if(downLoadTask.getFile_infos().size() < 2){
-                            downloaded = false;
-                        }else{
-                            for(MyFileInfo myFileInfo : downLoadTask.getFile_infos()){
-                                if(myFileInfo.isDownloaded()){
-                                    downloaded = false;
-                                    break;
-                                }
-                            }
-                        }
-                        myCamera = MyCamera.getByUID(downLoadTask.getCameraUID());
-                        if(!downloaded  &&
-                                downLoadTask.getSavePath() != null && myCamera != null &&
+        try {
+            status = STATUS_RUNNING;
+            while(true){
+                if(this.isInterrupted()){
+                    break;
+                }
+                if(DownLoadTasks.downloadTasks.size() > 0){
+                    this.downLoadTask = DownLoadTasks.downloadTasks.take();
+                    LogUtil.d("now Task:"+downLoadTask);
+                    LogUtil.d("finished? "+downLoadTask.isFinish());
+//                    boolean downloaded = downLoadTask.isFinish();
+//                    if(downLoadTask.getFile_infos().size() < 2){
+//                        downloaded = false;
+//                    }else{
+//                        for(MyFileInfo myFileInfo : downLoadTask.getFile_infos()){
+//                            if(myFileInfo.isDownloaded()){
+//                                downloaded = false;
+//                                break;
+//                            }
+//                        }
+//                    }
+                    myCamera = MyCamera.getByUID(downLoadTask.getCameraUID());
+                    if(!downLoadTask.isFinish()){//尚未完成，则尝试完成
+                        if(downLoadTask.getSavePath() != null && myCamera != null &&
                                 System.currentTimeMillis() - downLoadTask.getWarnTime() > 4*60*1000){
                             registe();
-                            if(downLoadTask.getFile_infos().size() < 2){//查询fileinfo
+                            if(!downLoadTask.isInfo()){//查询fileinfo
                                 status = STATUS_QUERYING;
                                 queryFileInfo();
                                 Thread.sleep(5000);
@@ -123,22 +112,28 @@ public class DownloadVideoThread extends Thread implements ICameraIOSessionCallb
                             status = STATUS_DOWNLOADED;
                             unregiste();
                         }
-                        if(++TaskIndex == DownLoadTasks.downloadTasks.size()) {
-                            Thread.sleep(1000*60);
-                            TaskIndex = 0;
+                        //判断是否要放回队列,如果还没完成，则放回队列
+                        if(!downLoadTask.isFinish()) {
+                            DownLoadTasks.downloadTasks.put(downLoadTask);
                         }
                     }
+//                  else{//已经完成，那么任务也不用放回队列
+//
+//                  }
+                }else{//如果队列为空，等1分钟再验证
+                    LogUtil.d("队列为空");
+                    Thread.sleep(1000*60);
                 }
-            }catch (Exception e){
-                e.printStackTrace();
-                status = STATUS_EXCEPTION;
             }
+        }catch (Exception e){
+            e.printStackTrace();
+            status = STATUS_EXCEPTION;
         }
     }
 
     //发送query命令
     private void queryFileInfo() {
-        LogUtil.d("queryFileInfo is called " + downLoadTask.getCameraUID() + " : " +downLoadTask.getStartTime() + " - " + downLoadTask.getEndTime());
+        LogUtil.d("queryFileInfo is called " + downLoadTask.getCameraUID() + " : " + (HiTools.sdfTimeSec(downLoadTask.getStartTime()) + " - " + HiTools.sdfTimeSec(downLoadTask.getEndTime())));
         MyCamera myCamera = MyCamera.getByUID(downLoadTask.getCameraUID());
         if (myCamera != null) {
             LogUtil.d("queryFile command send : " + (HiTools.sdfTimeSec(downLoadTask.getStartTime()) + " - " + HiTools.sdfTimeSec(downLoadTask.getEndTime())));
@@ -192,7 +187,7 @@ public class DownloadVideoThread extends Thread implements ICameraIOSessionCallb
                                     }
                                 }
                                 if(isNew){
-                                    String fileName = myCamera.getUid() + "-" + String.valueOf(file_info.sStartTime.getTimeInMillis()) + "-" + String.valueOf(file_info.sEndTime.getTimeInMillis());
+                                    String fileName = myCamera.getUid() + "-" + HiTools.sdfTimeFile(HiTools.getReadMillins(file_info.sStartTime)) + "-" + HiTools.sdfTimeFile(HiTools.getReadMillins(file_info.sEndTime));
                                     MyFileInfo myFileInfo = new MyFileInfo(false, file_info, fileName);
                                     downLoadTask.getFile_infos().add(myFileInfo);
                                     LogUtil.d("add fileinfo:" + downLoadTask.getCameraUID() + "," + myFileInfo.getFile_info().sStartTime.toString() + " - " + myFileInfo.getFile_info().sEndTime.toString());
@@ -212,6 +207,7 @@ public class DownloadVideoThread extends Thread implements ICameraIOSessionCallb
             switch (state) {
                 case DOWNLOAD_STATE_START:
                     LogUtil.d("download start " + path);
+                    lastrate = 0;
                     break;
                 case DOWNLOAD_STATE_DOWNLOADING:
                     float d;
@@ -224,13 +220,16 @@ public class DownloadVideoThread extends Thread implements ICameraIOSessionCallb
                         d = 99;
                     }
                     int rate = (int) d;
-                    String rateStr;
-                    if (rate < 10) {
-                        rateStr = " " + rate + "%";
-                    } else {
-                        rateStr = rate + "%";
+                    if(rate - lastrate >= 10){
+                        lastrate = rate;
+                        String rateStr;
+                        if (rate < 10) {
+                            rateStr = " " + rate + "%";
+                        } else {
+                            rateStr = rate + "%";
+                        }
+                        LogUtil.d("downloading " + path + " " + rateStr);
                     }
-                    LogUtil.d("download start " + path + " : " + rateStr);
                     break;
                 case DOWNLOAD_STATE_END:
                     LogUtil.d("download finish," + path);
@@ -263,4 +262,5 @@ public class DownloadVideoThread extends Thread implements ICameraIOSessionCallb
                 break;
         }
     }
+
 }

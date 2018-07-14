@@ -1,4 +1,4 @@
-package com.embedsky.hicamera.base;
+package cn.assassing.camtest.base;
 
 import android.util.Log;
 

@@ -1450,7 +1450,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/ {
 	
 	// 初始化hiSDK
     private void initSDK() {
-        HiDataValue.ANDROID_VERSION = HiTools.getAndroidVersion();
+        
         HiChipSDK.init(new HiChipInitCallback() {
             @Override
             public void onSuccess() {

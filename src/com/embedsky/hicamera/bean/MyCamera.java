@@ -1,4 +1,4 @@
-package com.embedsky.hicamera.bean;
+package cn.assassing.camtest.bean;
 
 import android.content.Context;
 

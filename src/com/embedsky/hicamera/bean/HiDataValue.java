@@ -1,4 +1,4 @@
-package com.embedsky.hicamera.bean;
+package cn.assassing.camtest.bean;
 
 import android.os.Environment;
 
@@ -45,7 +45,7 @@ public class HiDataValue {
 //	public final static int HANDLE_MESSAGE_PLAY_STATE = 0x80000001;
 //	public final static int HANDLE_MESSAGE_PROGRESSBAR_RUN = 0x80000002;
 
-	public static List<MyCamera> CameraList = new ArrayList<MyCamera>();
+	public static List<MyCamera> CameraList = new ArrayList<>();
 //	public static Map<String, MyCamera> CameraMap = new HashMap<>();
 	public static String[] zifu={"&","'","~","*","(",")","/","\"","%","!",":",";",".","<",">",",","'"};
 

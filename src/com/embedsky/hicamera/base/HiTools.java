@@ -1,4 +1,4 @@
-package com.embedsky.hicamera.base;
+package cn.assassing.camtest.base;
 
 import android.Manifest;
 import android.app.Activity;
@@ -8,6 +8,8 @@ import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+
+import com.hichip.content.HiChipDefines;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -144,6 +146,24 @@ public class HiTools {
         return df.format(timeLong);
     }
 
+    public static long getReadMillins(HiChipDefines.STimeDay time){
+        if(time != null){
+            try{
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+                return df.parse(time.toString()).getTime();
+            }catch (Exception e){
+                return 0L;
+            }
+        }else{
+            return 0L;
+        }
+    }
+
+    public static String sdfTimeFile(long timeLong) {
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINA);
+        return df.format(timeLong);
+    }
+
 //    public static String sdfTimeDay(long timeLong) {
 //        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd 00:00:00", Locale.CHINA);
 //        return df.format(timeLong);
@@ -186,13 +206,13 @@ public class HiTools {
         return Integer.valueOf(str);
     }
 
-    /**
-     * 检查单个权限
-     *
-     * @param context
-     * @param permission
-     * @return true 有该权限
-     */
+//    /**
+//     * 检查单个权限
+//     *
+//     * @param context
+//     * @param permission
+//     * @return true 有该权限
+//     */
 //    public static boolean checkPermission(Context context, String permission) {
 //
 //        int checkCallPhonePermission = ContextCompat.checkSelfPermission(context, permission);
@@ -202,11 +222,11 @@ public class HiTools {
 //        return false;
 //    }
 
-    /**
-     * 检查并征求用户当前app要用到所有的权限
-     */
+//    /**
+//     * 检查并征求用户当前app要用到所有的权限
+//     */
 //    public static void checkPermissionAll(Activity activity) {
-//        List<String> list = new ArrayList<String>();
+//        List<String> list = new ArrayList<>();
 //        if (!HiTools.checkPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 //            list.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 //        }

@@ -1,6 +1,4 @@
-package com.embedsky.hicamera.bean;
-
-import android.os.Environment;
+package cn.assassing.camtest.bean;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -8,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import com.embedsky.hicamera.base.HiTools;
-import com.embedsky.hicamera.base.LogUtil;
+import cn.assassing.camtest.base.HiTools;
+import cn.assassing.camtest.base.LogUtil;
 
 public class DownloadTask {
     private long startTime;
@@ -24,7 +22,7 @@ public class DownloadTask {
         this.endTime = endTime;
         this.warnTime = (startTime + endTime) / 2;
         this.cameraUID = cameraUID;
-        this.file_infos = new ArrayList<MyFileInfo>();
+        this.file_infos = new ArrayList<>();
         if (HiTools.isSDCardValid()) {
             String warnTimeStr = getTimeStr(warnTime);
             this.savePath = HiDataValue.ONLINE_VIDEO_PATH + File.separator + warnTimeStr + File.separator;
@@ -101,5 +99,39 @@ public class DownloadTask {
                 ", file_infos=" + file_infos +
                 ", savePath='" + savePath + '\'' +
                 '}';
+    }
+
+    public boolean isFinish(){
+
+        //首先必须包含了全部的时间
+        if(isInfo()){
+            //所有的file都下载了
+            for(MyFileInfo myFileInfo : this.file_infos){
+                File file = new File(this.savePath + myFileInfo.getFileName() + ".avi");
+                File file2 = new File(this.savePath + myFileInfo.getFileName() + ".mp4");
+                File file3 = new File(this.savePath + myFileInfo.getFileName() + ".h264");
+                if (!(file.exists() || file2.exists() || file3.exists())) {// 文件没有下载过
+                    return false;
+                }
+            }
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public boolean isInfo(){
+        long minTime = Long.MAX_VALUE;
+        long maxTime = Long.MIN_VALUE;
+        for(MyFileInfo myFileInfo : this.file_infos){
+            if(myFileInfo.getFile_info().sStartTime.getTimeInMillis() < minTime)
+                minTime = HiTools.getReadMillins(myFileInfo.getFile_info().sStartTime);
+            if(myFileInfo.getFile_info().sEndTime.getTimeInMillis() > maxTime)
+                maxTime = HiTools.getReadMillins(myFileInfo.getFile_info().sEndTime);
+        }
+        if(minTime <= this.startTime && maxTime >= this.endTime)
+            return true;
+        else
+            return false;
     }
 }

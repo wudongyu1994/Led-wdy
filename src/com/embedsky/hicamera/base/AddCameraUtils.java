@@ -1,5 +1,6 @@
-package com.embedsky.hicamera.base;
+package cn.assassing.camtest.base;
 
+import android.Manifest;
 import android.content.Context;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -9,10 +10,10 @@ import android.text.TextUtils;
 import com.hichip.control.HiCamera;
 import com.hichip.tools.HiSearchSDK;
 
-import com.embedsky.led.R;
-import com.embedsky.hicamera.bean.HiDataValue;
-import com.embedsky.hicamera.bean.MyCamera;
-import com.embedsky.led.LedActivity;;
+import cn.assassing.camtest.R;
+import cn.assassing.camtest.bean.HiDataValue;
+import cn.assassing.camtest.bean.MyCamera;
+import cn.assassing.camtest.main.MainActivity;
 
 /**
  * Created by cm on 2018/6/30.
@@ -43,7 +44,7 @@ public class AddCameraUtils {
         }
         int timeLong = 20000;
         final Message message = Message.obtain();
-        message.what = LedActivity.HANDLE_MESSAGE_WHAT_ADDCAMERA;
+        message.what = MainActivity.HANDLE_MESSAGE_WHAT_ADDCAMERA;
 
         searchSDK = new HiSearchSDK(new HiSearchSDK.ISearchResult() {
             @Override
@@ -58,21 +59,21 @@ public class AddCameraUtils {
 
                     for (int i = 0; i < HiDataValue.zifu.length; i++) {
                         if (str_uid.contains(HiDataValue.zifu[i])) {
-                            message.arg1 = LedActivity.HANDLE_MESSAGE_ARG1_ADDCAMERA_FAIL;
+                            message.arg1 = MainActivity.HANDLE_MESSAGE_ARG1_ADDCAMERA_FAIL;
                             message.obj = R.string.tips_invalid_uid;
                             handler.sendMessage(message);
                             return;
                         }
                     }
                     if (HiDataValue.CameraList != null && HiDataValue.CameraList.size() >= 64) {
-                        message.arg1 = LedActivity.HANDLE_MESSAGE_ARG1_ADDCAMERA_FAIL;
+                        message.arg1 = MainActivity.HANDLE_MESSAGE_ARG1_ADDCAMERA_FAIL;
                         message.obj = R.string.tips_limit_add_camera;
                         handler.sendMessage(message);
                         return;
                     }
 
                     if (TextUtils.isEmpty(str_uid)) {
-                        message.arg1 = LedActivity.HANDLE_MESSAGE_ARG1_ADDCAMERA_FAIL;
+                        message.arg1 = MainActivity.HANDLE_MESSAGE_ARG1_ADDCAMERA_FAIL;
                         message.obj = R.string.tips_null_uid;
                         handler.sendMessage(message);
                         return;
@@ -80,20 +81,20 @@ public class AddCameraUtils {
 
                     str_uid = HiTools.handUid(str_uid);
                     if (str_uid == null) {
-                        message.arg1 = LedActivity.HANDLE_MESSAGE_ARG1_ADDCAMERA_FAIL;
+                        message.arg1 = MainActivity.HANDLE_MESSAGE_ARG1_ADDCAMERA_FAIL;
                         message.obj = R.string.tips_invalid_uid;
                         handler.sendMessage(message);
                         return;
                     }
                     // 解决：用户名和密码同时输入：31个特殊字符，应用后app闪退且起不来
                     if (str_username.getBytes().length > 64) {
-                        message.arg1 = LedActivity.HANDLE_MESSAGE_ARG1_ADDCAMERA_FAIL;
+                        message.arg1 = MainActivity.HANDLE_MESSAGE_ARG1_ADDCAMERA_FAIL;
                         message.obj = R.string.tips_username_tolong;
                         handler.sendMessage(message);
                         return;
                     }
                     if (str_password.getBytes().length > 64) {
-                        message.arg1 = LedActivity.HANDLE_MESSAGE_ARG1_ADDCAMERA_FAIL;
+                        message.arg1 = MainActivity.HANDLE_MESSAGE_ARG1_ADDCAMERA_FAIL;
                         message.obj = R.string.tips_password_tolong;
                         handler.sendMessage(message);
                         return;
@@ -102,7 +103,7 @@ public class AddCameraUtils {
 
                     for (MyCamera camera : HiDataValue.CameraList) {
                         if (str_uid.equalsIgnoreCase(camera.getUid())) {
-                            message.arg1 = LedActivity.HANDLE_MESSAGE_ARG1_ADDCAMERA_FAIL;
+                            message.arg1 = MainActivity.HANDLE_MESSAGE_ARG1_ADDCAMERA_FAIL;
                             message.obj = R.string.tips_add_camera_exists;
                             handler.sendMessage(message);
                             return;
@@ -121,8 +122,8 @@ public class AddCameraUtils {
                 searchSDK.stop();
                 connectAllCamera();
                 Message message = Message.obtain();
-                message.what = LedActivity.HANDLE_MESSAGE_WHAT_ADDCAMERA;
-                message.arg1 = LedActivity.HANDLE_MESSAGE_ARG1_ADDCAMERA_COMPELETE;
+                message.what = MainActivity.HANDLE_MESSAGE_WHAT_ADDCAMERA;
+                message.arg1 = MainActivity.HANDLE_MESSAGE_ARG1_ADDCAMERA_COMPELETE;
                 handler.sendMessage(message);
             }
 
