@@ -238,9 +238,6 @@ public class ReGetuiApplication extends Application {
         }
     }
 
-    /*
-     * 输入“55 66 77 88” 和 data，则输出byte[]类的数据包，用于发送给终端
-     */
     public byte[] packdata(String devid, String data){
     	String temp = "80 55 07 02 "+devid+" 00 "+data;
     	String[] subtemp = temp.split(" ");
