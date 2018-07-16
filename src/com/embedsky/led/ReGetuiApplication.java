@@ -191,21 +191,22 @@ public class ReGetuiApplication extends Application {
     					}break;
     					case 30: {
                             Log.d(LOG_TAG, "paramstest");
-                            if(ReActivity.testtask != null){
-                                ReActivity.testtask.cancel();
-                            }
-    						if(ReActivity.time != null){
-    							ReActivity.time.cancel();
-    						}
+                            // if(ReActivity.testtask != null){
+                            //     ReActivity.testtask.cancel();
+                            // }
+    						// if(ReActivity.time != null){
+    						// 	ReActivity.time.cancel();
+    						// }
     						//ReActivity.time = new Timer();
     						// All message send and captureImg
                             ReActivity.loginfo.logtypeSet(1);
                             ReActivity.loginfo.typeflagSet("0");
                             // ReActivity.sidcnt = 0;
                             // ReActivity.mlocalcapture.setCapturePath(0);
-                            ReActivity.time = new Timer();
-                            ReActivity.testtask = ReActivity.new TestTask();
-                            ReActivity.time.schedule(ReActivity.testtask, 1000, 2000);
+                            // ReActivity.time = new Timer();
+                            // ReActivity.testtask = ReActivity.new TestTask();
+                            // ReActivity.time.schedule(ReActivity.testtask, 1000, 2000);                            
+                            new Thread(ReActivity.new TestTask()).start();
     					}break;
     					case 40: {
                             if(ReActivity.paramspacktask != null){
@@ -217,7 +218,7 @@ public class ReGetuiApplication extends Application {
                             ReActivity.loginfo.logtypeSet(2);
     						ReActivity.time = new Timer();
                             ReActivity.paramspacktask = ReActivity.new ParamspackTask();
-                            ReActivity.time.schedule(ReActivity.paramspacktask, 5000, 30000);
+                            ReActivity.time.schedule(ReActivity.paramspacktask, 5000, 30000); // 5s后执行 warnpacktask,T=30s
     						// Send params tirepressure tiretemp
     					}break;
     					default: break;

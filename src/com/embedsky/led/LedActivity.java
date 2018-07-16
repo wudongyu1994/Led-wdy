@@ -127,7 +127,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	private String opurl = "http://120.76.219.196:85/lock/request_car";
 
 	private static HashMap<String, String> params = new HashMap<String, String>();
-	private static HashMap<String, String> cidparams = new HashMap<String, String>(); 
+	private static HashMap<String, String> cidparams = new HashMap<String, String>();	//请查询“自贡三辰实业危化品 文档”里的“个推cid上传”
 	private static HashMap<String, String> opparams = new HashMap<String, String>();
 	protected static logInfo loginfo = new logInfo(); //data package uploaded
 	private static int[] warntypecnt = new int[10];
@@ -362,8 +362,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				Intent intent=new Intent();
+				intent.setAction("action_scsy_warn");
+				LedActivity.this.getApplicationContext().sendBroadcast(intent);
 				location = lm1.getLastKnownLocation(bestProvider);
 				updateLocation(location);
+
 			}
 		});
 		
@@ -552,7 +556,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	 * 线程内容：每过？？周期，进入该子线程，上传测试包。
 	 * 注意：需要在线程进行同时更新UI，所以通过message传递消息给handler来更新UI
 	 */
-    public class TestTask extends TimerTask {
+    public class TestTask implements Runnable {
     	@Override
     	public void run(){
     		Log.d(LOG_TAG, "testtask");
@@ -952,6 +956,9 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 								loginfo.typeflagSet("1");
 								//sidcnt = 0;
 								//mlocalcapture.setCapturePath(0);
+								Intent intent=new Intent();
+								intent.setAction("action_scsy_warn");
+								LedActivity.this.getApplicationContext().sendBroadcast(intent);
 								warntypecnt[1] += 1;
 							}
 							lockwarncnt = 0;
