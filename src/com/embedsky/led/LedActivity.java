@@ -560,11 +560,11 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     	@Override
     	public void run(){
     		Log.d(LOG_TAG, "testtask");
-    		if(testmsgbuf.isEmpty()){
-    			logInfo logInfo_test = new logInfo();
-    			testmsgbuf.add(logInfo_test.logInfoGet());
+    		// if(testmsgbuf.isEmpty()){
+    		// 	logInfo logInfo_test = new logInfo();
+    		// 	testmsgbuf.add(logInfo_test.logInfoGet());
 
-    		}
+    		// }
 			if(!testmsgbuf.isEmpty()){
 				Log.d(LOG_TAG, testmsgbuf.get(0).toString());
 				httpUtils.doPostAsyn(testurl, testmsgbuf.get(0), new httpUtils.HttpCallBackListener() {
