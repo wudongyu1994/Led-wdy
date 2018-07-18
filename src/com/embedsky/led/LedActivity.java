@@ -567,7 +567,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 
     		// }
 			if(testloginfo!=null){
-				Log.d(LOG_TAG, "In TestTask"+testloginfo.toString());
+				Log.d(LOG_TAG, "In TestTask "+testloginfo.toString());
 				httpUtils.doPostAsyn(testurl, testloginfo.logInfoGet(), new httpUtils.HttpCallBackListener() {
                     @Override//testurl
                     public void onFinish(String result) {

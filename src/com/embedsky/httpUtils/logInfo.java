@@ -1,5 +1,6 @@
 package com.embedsky.httpUtils;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import android.util.Log;
@@ -235,4 +236,15 @@ public class logInfo{
 		
 		return log_val;
 	}
+
+	@Override
+	public String toString() {
+		return "logInfo [logtype=" + logtype + ", trucknumber=" + trucknumber + ", gpsx=" + gpsx + ", gpsy=" + gpsy
+				+ ", speed=" + speed + ", gpsspeed=" + gpsspeed + ", distance=" + distance + ", fuelvol=" + fuelvol
+				+ ", tire_val=" + Arrays.toString(tire_val) + ", haswarn=" + haswarn + ", warntype=" + warntype
+				+ ", lock_val=" + lock_val + ", pow_val=" + pow_val + ", leakstatus=" + leakstatus + ", snapshot="
+				+ Arrays.toString(snapshot) + ", typeflag=" + typeflag + "]";
+	}
+	
+	
 }
