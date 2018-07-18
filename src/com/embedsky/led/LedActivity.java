@@ -77,6 +77,7 @@ import android.os.IMycanService;
 import android.os.Message;
 import android.os.RemoteException;
 import android.os.ServiceManager;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.view.KeyEvent;
@@ -109,6 +110,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	private final int MESSAGE_USB_INSERT = 0x107;
 	private final int MESSAGE_USB_UNINSERT = 0x108;
 	private final int MESSAGE_OPPARAMS = 0x109;
+	private final int MESSAGE_DELAY = 0x201;
 
 	//初始化led
 	public static native boolean ledInit();
@@ -152,6 +154,8 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	private static String gpsx;
 	private static String gpsy;
 	private static float speed = 0;
+	private static int v = 0;
+
 
 	//can总线
 	private static IMycanService mycanservice;
@@ -182,6 +186,10 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	public static String[] lockstatustemp = new String[5];
 	private static int lockwarncnt;
 	private static int leakstatuscnt;
+	public static long time_old;
+	public static long time_new;
+	private boolean operateIsOk=false;
+	private boolean is_warned_wdy=false;
 
 	//CheckBox数组，用来存放3个test控件
 	CheckBox[] cb = new CheckBox[3];
@@ -194,6 +202,20 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	Button btn1;
 
 	private LocationManager lm1;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -297,7 +319,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		//String cid = new String();
 		if(cid != null){
 			//tLogView.append(cid);
-			cidparams.put("trucknumber","川C1357");
+			cidparams.put("trucknumber","浙A1234");
 			cidparams.put("type", "100");
 			cidparams.put("cid", cid);
 			Log.d(LOG_TAG, cid);
@@ -392,9 +414,10 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		heartpacktask = new HeartpackTask();
 		warnpacktask = new WarnpackTask();
 		sendtime.schedule(cansendtask, 1000, 1000);// 1s后执行 cansendtask,T=1s
-		sendtime.schedule(serialssendtask, 1500, 1000);// 1.5s后执行 serialssendtask,T=1s
+		sendtime.schedule(serialssendtask, 1500, 2000);// 1.5s后执行 serialssendtask,T=1s
 		time.schedule(heartpacktask, 10000, 60000);// 10s后执行 heartpacktask,T=60s
 		time.schedule(warnpacktask, 6000, 20000);// 6s后执行 warnpacktask,T=20s
+		timer.start();
 	}//end onCreate
 
     @Override
@@ -406,9 +429,44 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     	super.onDestroy();
     }
 
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /******************************************************************************************
 * 以上时onCreate() & onDestroy()，以下是各种子线程定义
 *******************************************************************************************/
+
+	private CountDownTimer timer = new CountDownTimer(14400000,60000){	//4 hours, tick 1 min
+    	@Override
+    	public void onTick(long millisUntilFinished){
+			if(v<3 || speed<3){		
+				timer.start();
+			}		
+    	}
+    	@Override
+    	public void onFinish(){    		
+			loginfo.haswarnSet("1");
+		  	loginfo.typeSet("7");
+		  	warnmsgbuf.add(loginfo.logInfoGet());
+			loginfo.haswarnSet("0");
+			tiemr.start();
+    	}
+    }
+
 	/*
 	 * can send 子线程
 	 * 线程内容：每过1s周期，进入该子线程，设置收集到的can数据，准备发送给服务器。
@@ -460,6 +518,14 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 					
 				}
 			}
+			if(app.wdyoprateflag>0)
+			{
+				Log.d(LOG_TAG,"here is app.lockoperateflag>0");
+				Message msg = new Message();
+                msg.what = MESSAGE_DELAY;
+                delayhandler.sendMessageDelayed(msg,20000);
+                app.wdyoprateflag=0;
+			}
 		}
 	};
 
@@ -508,6 +574,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		@Override
 		public void run() {
 			if (!warnmsgbuf.isEmpty()){
+				Log.d(LOG_TAG,"---> here is WarnpackTask");
 				Log.d(LOG_TAG, warnmsgbuf.get(0).toString());
 				httpUtils.doPostAsyn(url, warnmsgbuf.get(0), new httpUtils.HttpCallBackListener() {
 	                @Override
@@ -843,16 +910,62 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     	}
     }
 
+
+
+
+
+
+
+
+
+							
+
 /******************************************************************************************
  * 以上是各种子线程定义，以下是各种handler
 *******************************************************************************************/
+	/*
+     * wdytimer handler
+     * handler内容：获取USB接收到的数据，并更新UI
+     */
+	Handler delayhandler = new Handler(){
+		@Override
+		public void handleMessage(Message msg){
+			Log.d(LOG_TAG,"here is delayhandler");
+			if(msg.what == MESSAGE_DELAY){
+				if(!operateIsOk){
+					app.reparams.put("operate", "1"); //operate failed
+					lockwarncnt = 0;
+					Log.d(LOG_TAG, app.reparams.toString());
+					httpUtils.doPostAsyn(app.url, app.reparams, new httpUtils.HttpCallBackListener() {
+			            @Override
+			            public void onFinish(String result) {
+			                Message message = new Message();
+			                message.what = MESSAGE_LOCKCMDOPERATE;
+			                message.obj=result;
+			                handler.sendMessage(message);  
+			            }
+
+			            @Override
+			            public void onError(Exception e) {
+			            }
+
+				    });
+				    app.lockoperateflag = 0;
+				}
+				else
+					operateIsOk=false;
+			}
+		}
+	};
+
+
     /*
      * serials handler
      * handler内容：获取USB接收到的数据，并更新UI
      */
     Handler sehandler = new Handler(){
     	@Override
-    	public void handleMessage(Message msg){	
+    	public void handleMessage(Message msg){
     		if(msg.what == 1) {
     			ArrayList<String> data = (ArrayList<String>) msg.obj;
 	    		Log.d("Serials", data.toString());
@@ -860,8 +973,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	    		String devid = data.get(4)+data.get(5)+data.get(6)+data.get(7);
 	    		if(flag.equals("00")){
 	    			if(!data.get(1).equals("05")){
+	    				Log.d(LOG_TAG,"---> here is sehandler 07");
 	    				if(devid.equals("55667788")){	
 		    				if(data.get(9).equals("00")){
+		    					if(lockstruct[0].getlockStatus().equals("1")){
+		    						is_warned_wdy=true;
+		    					}
 								lockstruct[0].setlockStatus("0");
 								tx[0].setText(lockstruct[0].getlockName()+"\t"+lockstruct[0].getlockStatus());
 							}else if(data.get(9).equals("01")){
@@ -870,23 +987,33 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 							}
 						}else if(devid.equals("55667789")){
 							if(data.get(9).equals("00")){
+								Log.d(LOG_TAG,"---> before:"+lockstruct[3].getlockStatus());
+		    					if(lockstruct[3].getlockStatus().equals("1")){
+		    						is_warned_wdy=true;		    						
+		    						Log.d(LOG_TAG,"--->is_warned_wdy=true;");
+		    					}
 								lockstruct[3].setlockStatus("0");
 								tx[3].setText(lockstruct[3].getlockName()+"\t"+lockstruct[3].getlockStatus());
 							}else if(data.get(9).equals("01")){
 								lockstruct[3].setlockStatus("1");
 								tx[3].setText(lockstruct[3].getlockName()+"\t"+lockstruct[3].getlockStatus());
 							}
+							
 						}else if(devid.equals("55667790")){
 							if(data.get(9).equals("00")){
+		    					if(lockstruct[4].getlockStatus().equals("1"))
+		    						is_warned_wdy=true;
 								lockstruct[4].setlockStatus("0");
 								tx[4].setText(lockstruct[4].getlockName()+"\t"+lockstruct[4].getlockStatus());
 							}else if(data.get(9).equals("01")){
 								lockstruct[4].setlockStatus("1");
 								tx[4].setText(lockstruct[4].getlockName()+"\t"+lockstruct[4].getlockStatus());
 							}
+							
 						}
 	    			}else if(data.get(1).equals("05")){
-	    				opparams.put("trucknumber", "川C1357");
+	    				Log.d(LOG_TAG,"---> here is sehandler 05");
+	    				opparams.put("trucknumber", "浙A1234");
 	    				if(devid.equals("55667788")){	
 		    				if(data.get(9).equals("00")){
 								//TODO
@@ -896,21 +1023,39 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 							}
 						}else if(devid.equals("55667789")){
 							if(data.get(9).equals("00")){
-								opparams.put("type", "0");
-								httpUtils.doPostAsyn(opurl, opparams, new httpUtils.HttpCallBackListener() {
-						            @Override
-						            public void onFinish(String result) {
-						                Message message = new Message();
-						                message.what = MESSAGE_OPPARAMS;
-						                message.obj=result;
-						                handler.sendMessage(message);  
-						            }
+								// opparams.put("type", "0");
+								// httpUtils.doPostAsyn(opurl, opparams, new httpUtils.HttpCallBackListener() {
+						  //           @Override
+						  //           public void onFinish(String result) {
+						  //               Message message = new Message();
+						  //               message.what = MESSAGE_OPPARAMS;
+						  //               message.obj=result;
+						  //               handler.sendMessage(message);  
+						  //           }
 
-						            @Override
-						            public void onError(Exception e) {
-						            }
+						  //           @Override
+						  //           public void onError(Exception e) {
+						  //           }
 
-						    	});
+						  //   	});
+    operateIsOk=true;
+	app.reparams.put("operate", "0"); //operate success
+	Log.d(LOG_TAG, app.reparams.toString());
+	httpUtils.doPostAsyn(app.url, app.reparams, new httpUtils.HttpCallBackListener() {
+        @Override
+        public void onFinish(String result) {
+            Message message = new Message();
+            message.what = MESSAGE_LOCKCMDOPERATE;
+            message.obj=result;
+            handler.sendMessage(message);  
+        }
+
+        @Override
+        public void onError(Exception e) {
+        }
+
+    });
+    app.wdyoprateflag = 0;
 							}else{
 								lockstatustemp[3] = "1";
 								lockstruct[3].setlockStatus("1");
@@ -918,21 +1063,39 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 							}
 						}else if(devid.equals("55667790")){
 							if(data.get(9).equals("00")){
-								opparams.put("type", "2");
-								httpUtils.doPostAsyn(opurl, opparams, new httpUtils.HttpCallBackListener() {
-						            @Override
-						            public void onFinish(String result) {
-						                Message message = new Message();
-						                message.what = MESSAGE_OPPARAMS;
-						                message.obj=result;
-						                handler.sendMessage(message);  
-						            }
+								// opparams.put("type", "2");
+								// httpUtils.doPostAsyn(opurl, opparams, new httpUtils.HttpCallBackListener() {
+						  //           @Override
+						  //           public void onFinish(String result) {
+						  //               Message message = new Message();
+						  //               message.what = MESSAGE_OPPARAMS;
+						  //               message.obj=result;
+						  //               handler.sendMessage(message);  
+						  //           }
 
-						            @Override
-						            public void onError(Exception e) {
-						            }
+						  //           @Override
+						  //           public void onError(Exception e) {
+						  //           }
 
-						    	});
+						  //   	});
+	operateIsOk=true;
+	app.reparams.put("operate", "0"); //operate success
+	Log.d(LOG_TAG, app.reparams.toString());
+	httpUtils.doPostAsyn(app.url, app.reparams, new httpUtils.HttpCallBackListener() {
+        @Override
+        public void onFinish(String result) {
+            Message message = new Message();
+            message.what = MESSAGE_LOCKCMDOPERATE;
+            message.obj=result;
+            handler.sendMessage(message);  
+        }
+
+        @Override
+        public void onError(Exception e) {
+        }
+
+    });
+    app.wdyoprateflag = 0;
 							}else{
 								lockstatustemp[4] = "1";
 								lockstruct[4].setlockStatus("1");
@@ -944,52 +1107,70 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 					//warnflagSet and mlocalcapture.setCapturePath(0)
 					//operate success or failed
 					loginfo.lockSet(lockstruct);
-					for(int i = 0 ; i < lockstruct.length; i++){
-						if(!lockstruct[i].getlockStatus().equals(lockstatustemp[i])){
-							lockwarncnt += 1 ;
-							break;
-						}
-						if( i == lockstruct.length-1) {
-							lockwarncnt = 0;
-						}
+					if(is_warned_wdy){
+						is_warned_wdy=false;
+						loginfo.typeflagSet("1");
+						loginfo.haswarnSet("1");
+						loginfo.typeSet("1");
+						warnmsgbuf.add(loginfo.logInfoGet());
+						loginfo.haswarnSet("0");
+						// Log.d(LOG_TAG,"--->warnmsgbuf added");
+						//let camera app catch videos
+						Intent intent=new Intent();
+						intent.setAction("action_scsy_warn");
+						LedActivity.this.getApplicationContext().sendBroadcast(intent);
 					}
-					if(app.lockoperateflag == 0){
-						if(lockwarncnt > 0 && app.wirelessflag == 1){
-							if(warntypecnt[1] < 1) {
-								loginfo.typeflagSet("1");
-								//sidcnt = 0;
-								//mlocalcapture.setCapturePath(0);
-								Intent intent=new Intent();
-								intent.setAction("action_scsy_warn");
-								LedActivity.this.getApplicationContext().sendBroadcast(intent);
-								warntypecnt[1] += 1;
-							}
-							lockwarncnt = 0;
-						}
-					}else{
-						if(lockwarncnt > 0) {
-							app.reparams.put("operate", "1"); //operate failed
-							lockwarncnt = 0;
-						}else{
-							app.reparams.put("operate", "0"); //operate success
-						}
-						Log.d(LOG_TAG, app.reparams.toString());
-						httpUtils.doPostAsyn(app.url, app.reparams, new httpUtils.HttpCallBackListener() {
-				            @Override
-				            public void onFinish(String result) {
-				                Message message = new Message();
-				                message.what = MESSAGE_LOCKCMDOPERATE;
-				                message.obj=result;
-				                handler.sendMessage(message);  
-				            }
 
-				            @Override
-				            public void onError(Exception e) {
-				            }
+					// for(int i = 0 ; i < lockstruct.length; i++){
+					// 	if(!lockstruct[i].getlockStatus().equals(lockstatustemp[i])){
+					// 		lockwarncnt += 1 ;
+					// 		break;
+					// 	}
+					// 	if( i == lockstruct.length-1) {
+					// 		lockwarncnt = 0;
+					// 	}
+					// }
+					// if(app.lockoperateflag == 0){
+					// 	if(lockwarncnt > 0 && app.wirelessflag == 1){
+					// 		if(warntypecnt[1] < 1) {
+					// 			loginfo.typeflagSet("1");
+					// 			//sidcnt = 0;
+					// 			//mlocalcapture.setCapturePath(0);
+					// 			Intent intent=new Intent();
+					// 			intent.setAction("action_scsy_warn");
+					// 			LedActivity.this.getApplicationContext().sendBroadcast(intent);
+					// 			warntypecnt[1] += 1;
+					// 		}
+					// 		lockwarncnt = 0;
+					// 	}
+					// }else{
+						// if(lockwarncnt > 0) {
+						// 	app.reparams.put("operate", "1"); //operate failed
+						// 	lockwarncnt = 0;
+						// }else{
+						// 	app.reparams.put("operate", "0"); //operate success
+						// }
+						// Log.d(LOG_TAG, app.reparams.toString());
+						// httpUtils.doPostAsyn(app.url, app.reparams, new httpUtils.HttpCallBackListener() {
+				  //           @Override
+				  //           public void onFinish(String result) {
+				  //               Message message = new Message();
+				  //               message.what = MESSAGE_LOCKCMDOPERATE;
+				  //               message.obj=result;
+				  //               handler.sendMessage(message);  
+				  //           }
 
-					    });
-					    app.lockoperateflag = 0;
-					}
+				  //           @Override
+				  //           public void onError(Exception e) {
+				  //           }
+
+					 //    });
+					 //    app.lockoperateflag = 0;
+					// }
+					
+
+
+								
 					
 	    		}else if(flag.equals("01")){
 	    			//if(devid.equals("55667788")){
@@ -1007,6 +1188,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	    						loginfo.haswarnSet("1");
 	    						loginfo.typeSet("2");
 	    						warnmsgbuf.add(loginfo.logInfoGet());
+								loginfo.haswarnSet("0");
 	    						warntypecnt[2] += 1;
 	    						leakstatuscnt = 0;
 	    					}
@@ -1075,6 +1257,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 						loginfo.haswarnSet("1");
 						loginfo.typeSet("3");
 						warnmsgbuf.add(loginfo.logInfoGet());
+						loginfo.haswarnSet("0");
 						warntypecnt[3] += 1;
 					}
 					
@@ -1094,7 +1277,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 								//Log.d("OBD", Long.toHexString(id)+" "+Integer.toHexString(pid)+" "+String.valueOf(w)+"rpm\n");
 							  }
 							  break;
-						case 0x0D: int v = res.get(3);
+						case 0x0D: v = res.get(3);
 							  loginfo.speedSet(v);
 							  //TODO Compare the speed to get stop/high-speed/exhausted drive/...
 							  //and send
@@ -1103,6 +1286,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 									loginfo.haswarnSet("1");
 								  	loginfo.typeSet("6");
 								  	warnmsgbuf.add(loginfo.logInfoGet());
+									loginfo.haswarnSet("0");
 								  	warntypecnt[6] += 1;
 							  	}
 							  }else if(v > 80 || speed > 80) {
@@ -1110,9 +1294,11 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 									loginfo.haswarnSet("1");
 								  	loginfo.typeSet("5");
 								  	warnmsgbuf.add(loginfo.logInfoGet());
+									loginfo.haswarnSet("0");
 								  	warntypecnt[5] += 1;
 							  	}
 							  }
+							  
 							  if(tLogView != null){
 								//Log.d("OBD", Long.toHexString(id)+" "+Integer.toHexString(pid)+" "+String.valueOf(v)+"km/s\n");
 							  }
@@ -1133,9 +1319,16 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 							  // To Compare the fuellevel and send
 							  if(fuelLevel - fuelleveltemp > 1){
 							  	if(warntypecnt[4] < 1 ) {
+									loginfo.haswarnSet("1");
 							  		loginfo.typeflagSet("4");
+								  	loginfo.typeSet("4");
+								  	warnmsgbuf.add(loginfo.logInfoGet());
+									logInfo.haswarnSet("0");
 							  		// sidcnt = 0;
 							  		// mlocalcapture.setCapturePath(0);
+							  		Intent intent=new Intent();
+									intent.setAction("action_scsy_warn");
+									LedActivity.this.getApplicationContext().sendBroadcast(intent);
 							  		warntypecnt[4] += 1 ;
 							  	}
 							  }
@@ -1249,6 +1442,19 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     	}
 	};
 	
+
+
+
+
+
+
+
+
+
+
+
+
+
 /******************************************************************************************
  * 以上是各种handler，以下是其他自定义函数
 *******************************************************************************************/

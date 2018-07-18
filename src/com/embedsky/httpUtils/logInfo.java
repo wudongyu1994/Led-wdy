@@ -46,7 +46,7 @@ public class logInfo{
 	public logInfo(){
 		super();
 		logtype = 0;
-		trucknumber = "川C1357";
+		trucknumber = "浙A1234";
 		gpsx = "0";
 		gpsy = "0";
 		speed = 0;

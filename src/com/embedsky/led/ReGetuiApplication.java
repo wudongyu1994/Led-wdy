@@ -40,6 +40,7 @@ public class ReGetuiApplication extends Application {
 	private static String operate = new String();
 	public static int wirelessflag = 0;
     public static int lockoperateflag = 0;
+    public static int wdyoprateflag = 0;
 	
 	protected static HashMap<String, String> reparams = new HashMap<String, String>();
 		
@@ -124,9 +125,10 @@ public class ReGetuiApplication extends Application {
                                 }
                             }
                         }break;
-    					case 11: {
-    						operate = command.getString("operate");
+    					case 11: {                            
+                            operate = command.getString("operate");
                             lockoperateflag = 1;
+                            wdyoprateflag = 1;
     						if(operate.equals("0")){
 		        				//temp = true;
 		        				//temp = ReActivity.ledSetOn(1);
