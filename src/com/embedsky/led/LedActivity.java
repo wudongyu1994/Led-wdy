@@ -132,7 +132,8 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	protected static logInfo loginfo = new logInfo(); //data package uploaded
 	private static int[] warntypecnt = new int[10];
 	protected static LinkedList<HashMap<String, String>> warnmsgbuf = new LinkedList<HashMap<String, String>>();
-	private static LinkedList<HashMap<String, String>> testmsgbuf = new LinkedList<HashMap<String, String>>();
+	// private static LinkedList<HashMap<String, String>> testmsgbuf = new LinkedList<HashMap<String, String>>();
+	private logInfo testloginfo;
 	protected static LinkedList<String> serialssendbuf = new LinkedList<String>();
 	private static boolean flag;
 	private static int cnt;	
@@ -392,7 +393,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		warnpacktask = new WarnpackTask();
 		sendtime.schedule(cansendtask, 1000, 1000);// 1s后执行 cansendtask,T=1s
 		sendtime.schedule(serialssendtask, 1500, 1000);// 1.5s后执行 serialssendtask,T=1s
-		time.schedule(heartpacktask, 60000, 60000);// 60s后执行 heartpacktask,T=60s
+		time.schedule(heartpacktask, 10000, 60000);// 10s后执行 heartpacktask,T=60s
 		time.schedule(warnpacktask, 6000, 20000);// 6s后执行 warnpacktask,T=20s
 	}//end onCreate
 
@@ -565,16 +566,16 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     		// 	testmsgbuf.add(logInfo_test.logInfoGet());
 
     		// }
-			if(!testmsgbuf.isEmpty()){
-				Log.d(LOG_TAG, testmsgbuf.get(0).toString());
-				httpUtils.doPostAsyn(testurl, testmsgbuf.get(0), new httpUtils.HttpCallBackListener() {
+			if(testloginfo!=null){
+				Log.d(LOG_TAG, "In TestTask"+testloginfo.toString());
+				httpUtils.doPostAsyn(testurl, testloginfo.logInfoGet(), new httpUtils.HttpCallBackListener() {
                     @Override//testurl
                     public void onFinish(String result) {
                    	Message message = new Message();
                    		message.what = MESSAGE_TESTPACKAGE;
                     	message.obj = result;
                     	handler.sendMessage(message);
-                    	testmsgbuf.removeFirst();
+                    	// testmsgbuf.removeFirst();
                     }
 
                     @Override
@@ -1163,6 +1164,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     	public void handleMessage(Message msg) {
     		switch(msg.what){
     			case MESSAGE_HEARTPACKAGE:{
+    				testloginfo=loginfo;
     				String s =(String) msg.obj;
 	        		//Toast.makeText(LedActivity.this,s,Toast.LENGTH_SHORT).show();
 					//System.out.println(s);
@@ -1191,7 +1193,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     							if(loginfo.typeflagGet().equals("0")){
     								loginfo.haswarnSet("1");
     								loginfo.typeSet("1");
-									testmsgbuf.add(loginfo.logInfoGet());
+									// testmsgbuf.add(loginfo.logInfoGet());
     							}else{
     								loginfo.haswarnSet("1");
     								loginfo.typeSet(loginfo.typeflagGet());
