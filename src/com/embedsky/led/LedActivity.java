@@ -539,7 +539,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			httpUtils.doPostAsyn(url, loginfo.logInfoGet(), new httpUtils.HttpCallBackListener() {
                 @Override
                 public void onFinish(String result) {
-               	Message message = new Message();
+               		Message message = new Message();
                		message.what = MESSAGE_PARAMSPACKAGE;
                 	message.obj = result;
                 	handler.sendMessage(message);
@@ -568,14 +568,16 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     		// }
 			if(testloginfo!=null){
 				Log.d(LOG_TAG, "In TestTask "+testloginfo.toString());
+				Log.d(LOG_TAG, "In TestTask "+testloginfo.logInfoGet().toString());
 				httpUtils.doPostAsyn(testurl, testloginfo.logInfoGet(), new httpUtils.HttpCallBackListener() {
                     @Override//testurl
                     public void onFinish(String result) {
-                   	Message message = new Message();
-                   		message.what = MESSAGE_TESTPACKAGE;
-                    	message.obj = result;
-                    	handler.sendMessage(message);
-                    	// testmsgbuf.removeFirst();
+                   		// Message message = new Message();
+                   		// message.what = MESSAGE_TESTPACKAGE;
+                    	// message.obj = result;
+                    	// handler.sendMessage(message);
+                    	// // testmsgbuf.removeFirst();
+                    	Log.d(LOG_TAG,"result: "+result);
                     }
 
                     @Override

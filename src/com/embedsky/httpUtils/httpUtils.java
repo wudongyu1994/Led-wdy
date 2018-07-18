@@ -22,8 +22,8 @@ import android.util.Log;
 public class httpUtils {
     private static final String LOG_TAG = "Http";
 	
-	private static final int CONNECT_TIMEOUT = 2*1000;  
-    private static final int READ_TIMEOUT = 5*1000;
+	private static final int CONNECT_TIMEOUT = 10*1000;  
+    private static final int READ_TIMEOUT = 10*1000;
         
     private static String encoderUTF(String in)
     {
@@ -43,7 +43,8 @@ public class httpUtils {
         while(iterator.hasNext())
         {
             Entry<String, String> entry = iterator.next();
-            param.append(encoderUTF(entry.getKey())+"="+encoderUTF(entry.getValue())+"&");
+            if(entry.getKey()!=null && entry.getValue()!=null)
+                param.append(encoderUTF(entry.getKey())+"="+encoderUTF(entry.getValue())+"&");
         }
         param.deleteCharAt(param.length()-1);
         return param.toString();
@@ -201,6 +202,7 @@ public class httpUtils {
         } catch (Exception e) {
             System.out.println("Error in Post"+e);
             e.printStackTrace();
+            Log.d("lock","doPost Error");
         }
         finally{
             try{
