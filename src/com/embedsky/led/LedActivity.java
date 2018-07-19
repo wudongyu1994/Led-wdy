@@ -443,7 +443,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 * 以上时onCreate() & onDestroy()，以下是各种子线程定义
 *******************************************************************************************/
 
-	private CountDownTimer timer = new CountDownTimer(14400000,60000){	//4 hours, tick 1 min
+	private CountDownTimer timer = new CountDownTimer(4*60*60*1000,60*1000){	//4 hours, tick 1 min
     	@Override
     	public void onTick(long millisUntilFinished){
 			if(v<3 || speed<3){		
@@ -980,10 +980,10 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 							}
 						}else if(devid.equals("55667789")){
 							if(data.get(9).equals("00")){
-								// Log.d(LOG_TAG,"---> before:"+lockstruct[3].getlockStatus());
+								Log.d(LOG_TAG,"---> before:"+lockstruct[3].getlockStatus());
 		    					if(lockstruct[3].getlockStatus().equals("1")){
 		    						is_warned_wdy=true;		    						
-		    						// Log.d(LOG_TAG,"--->is_warned_wdy=true;");
+		    						Log.d(LOG_TAG,"--->is_warned_wdy=true;");
 		    					}
 								lockstruct[3].setlockStatus("0");
 								tx[3].setText(lockstruct[3].getlockName()+"\t"+lockstruct[3].getlockStatus());
@@ -1100,6 +1100,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 					//warnflagSet and mlocalcapture.setCapturePath(0)
 					//operate success or failed
 					loginfo.lockSet(lockstruct);
+					Log.d(LOG_TAG,"--->is_warned_wdy: "+is_warned_wdy);
 					if(is_warned_wdy){
 						is_warned_wdy=false;
 						loginfo.typeflagSet("1");
