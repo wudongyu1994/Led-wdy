@@ -256,7 +256,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		ReGetuiApplication.ReActivity = this;
 
 		// LED1-LED8选中/取消事件
-		for (int i = 0; i < 3; i++) {
+		for (int i = 1; i < 3; i++) {
 			cb[i].setOnClickListener(myClickListern);
 		}
 		
@@ -1485,31 +1485,32 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		public void onClick(View v) {
 			//遍历数组，判断是哪个test控件被选中
 			
-			if (v == cb[0]) {
-				//根据选中/取消状态来控制test的开/关
-				//controlLed(i + 1, cb[i].isChecked());
-				if(cb[0].isChecked()){
-					//mlocalcapture.setCapturePath(0);
-					loginfo.speedSet(150);
-					HashMap<String, String> tem = loginfo.logInfoGet();
-					// Log.d(LOG_TAG, tem.toString());
-					httpUtils.doPostAsyn(url, tem, new httpUtils.HttpCallBackListener() {
-                    @Override
-                    public void onFinish(String result) {
-                   	Message message = new Message();
-                   		message.what = MESSAGE_HEARTPACKAGE;
-                    	message.obj = result;
-                    	handler.sendMessage(message);
-                    }
+			// if (v == cb[0]) {
+			// 	//根据选中/取消状态来控制test的开/关
+			// 	//controlLed(i + 1, cb[i].isChecked());
+			// 	if(cb[0].isChecked()){
+			// 		//mlocalcapture.setCapturePath(0);
+			// 		loginfo.speedSet(150);
+			// 		HashMap<String, String> tem = loginfo.logInfoGet();
+			// 		// Log.d(LOG_TAG, tem.toString());
+			// 		httpUtils.doPostAsyn(url, tem, new httpUtils.HttpCallBackListener() {
+   //                  @Override
+   //                  public void onFinish(String result) {
+   //                 	Message message = new Message();
+   //                 		message.what = MESSAGE_HEARTPACKAGE;
+   //                  	message.obj = result;
+   //                  	handler.sendMessage(message);
+   //                  }
 
-                    @Override
-               	    public void onError(Exception e) {
-                    }
-		        });
-					loginfo.speedSet(0);
-				}
+   //                  @Override
+   //             	    public void onError(Exception e) {
+   //                  }
+		 //        });
+			// 		loginfo.speedSet(0);
+			// 	}
 				
-			}else if(v == cb[1]){
+			// }else 
+			if(v == cb[1]){
 				if(cb[1].isChecked()){
 					for(int i = 0; i < 5; i++){
 						serialssendbuf.add(app.lockdevid[1]+"|"+"00");
@@ -1602,7 +1603,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			gpsx = String.format("%.9f", location.getLongitude());
 			gpsy = String.format("%.9f", location.getLatitude());
 			speed = location.getSpeed();
-			String gpsInfo="gpsx: "+gpsx+"\t"+"gpsy: "+gpsy+"\t"+"gpsspeed: "+speed;
+			String gpsInfo="gpsx: "+gpsx+" "+"gpsy: "+gpsy+" "+"gpsspeed: "+speed;
 			// Log.d("GPS", gpsInfo);
 			Toast.makeText(LedActivity.this, gpsInfo, Toast.LENGTH_SHORT).show();
 			tx[17].setText(gpsInfo);
