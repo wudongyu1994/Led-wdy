@@ -192,7 +192,7 @@ public class ReGetuiApplication extends Application {
 			    			
     					}break;
     					case 30: {
-                            Log.d(LOG_TAG, "paramstest");
+                            // Log.d(LOG_TAG, "paramstest");
                             // if(ReActivity.testtask != null){
                             //     ReActivity.testtask.cancel();
                             // }

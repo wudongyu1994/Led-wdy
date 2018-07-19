@@ -221,7 +221,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		Log.i(LOG_TAG,"begin onCreate()");
+		// Log.i(LOG_TAG,"begin onCreate()");
 
 		context = LedActivity.this.getApplicationContext();
 		app = (ReGetuiApplication) getApplicationContext();
@@ -322,7 +322,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			cidparams.put("trucknumber","浙A1234");
 			cidparams.put("type", "100");
 			cidparams.put("cid", cid);
-			Log.d(LOG_TAG, cid);
+			// Log.d(LOG_TAG, cid);
 			
 			httpUtils.doPostAsyn(getuiurl, cidparams, new httpUtils.HttpCallBackListener() {
 	            @Override
@@ -355,7 +355,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		Intent i = getIntent();
 		String action = i.getAction();
 		if (action.equals("android.hardware.usb.action.USB_DEVICE_ATTACHED")) {
-			Log.d(LOG_TAG, "init USB");
+			// Log.d(LOG_TAG, "init USB");
 			initUSB();
 		}
 		lockwarncnt = 0;
@@ -372,7 +372,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		}
 		
 		final String bestProvider = lm1.getBestProvider(getCriteria(),true);
-		Log.d("GPS", "bestProvider"+bestProvider);
+		// Log.d("GPS", "bestProvider"+bestProvider);
 
 		if(bestProvider!=null || !"".equals(bestProvider.trim())){
 			location = lm1.getLastKnownLocation(bestProvider);
@@ -463,9 +463,9 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		  	loginfo.typeSet("7");
 		  	warnmsgbuf.add(loginfo.logInfoGet());
 			loginfo.haswarnSet("0");
-			tiemr.start();
+			timer.start();
     	}
-    }
+    };
 
 	/*
 	 * can send 子线程
@@ -503,7 +503,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		@Override
 		public void run(){
 			if(!serialssendbuf.isEmpty()){
-				Log.d(LOG_TAG, serialssendbuf.get(0));
+				// Log.d(LOG_TAG, serialssendbuf.get(0));
 				String[] sendbuftemp = serialssendbuf.get(0).split("\\|");
 				serialssendbuf.removeFirst();
 				if(sendbuftemp.length == 2){
@@ -520,7 +520,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			}
 			if(app.wdyoprateflag>0)
 			{
-				Log.d(LOG_TAG,"here is app.lockoperateflag>0");
+				// Log.d(LOG_TAG,"here is app.lockoperateflag>0");
 				Message msg = new Message();
                 msg.what = MESSAGE_DELAY;
                 delayhandler.sendMessageDelayed(msg,20000);
@@ -548,7 +548,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 				}
 			}
 			HashMap<String, String> tem = loginfo.logInfoGet();
-			Log.d(LOG_TAG, tem.toString());
+			// Log.d(LOG_TAG, tem.toString());
 			httpUtils.doPostAsyn(url, tem, new httpUtils.HttpCallBackListener() {
                 @Override
                 public void onFinish(String result) {
@@ -574,8 +574,8 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		@Override
 		public void run() {
 			if (!warnmsgbuf.isEmpty()){
-				Log.d(LOG_TAG,"---> here is WarnpackTask");
-				Log.d(LOG_TAG, warnmsgbuf.get(0).toString());
+				// Log.d(LOG_TAG,"---> here is WarnpackTask");
+				// Log.d(LOG_TAG, warnmsgbuf.get(0).toString());
 				httpUtils.doPostAsyn(url, warnmsgbuf.get(0), new httpUtils.HttpCallBackListener() {
 	                @Override
 	                public void onFinish(String result) {
@@ -602,7 +602,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	public class ParamspackTask extends TimerTask {
 		@Override
 		public void run() {
-			Log.d(LOG_TAG, loginfo.logInfoGet().toString());
+			// Log.d(LOG_TAG, loginfo.logInfoGet().toString());
 			httpUtils.doPostAsyn(url, loginfo.logInfoGet(), new httpUtils.HttpCallBackListener() {
                 @Override
                 public void onFinish(String result) {
@@ -627,15 +627,15 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     public class TestTask implements Runnable {
     	@Override
     	public void run(){
-    		Log.d(LOG_TAG, "testtask");
+    		// Log.d(LOG_TAG, "testtask");
     		// if(testmsgbuf.isEmpty()){
     		// 	logInfo logInfo_test = new logInfo();
     		// 	testmsgbuf.add(logInfo_test.logInfoGet());
 
     		// }
 			if(testloginfo!=null){
-				Log.d(LOG_TAG, "In TestTask "+testloginfo.toString());
-				Log.d(LOG_TAG, "In TestTask "+testloginfo.logInfoGet().toString());
+				// Log.d(LOG_TAG, "In TestTask "+testloginfo.toString());
+				// Log.d(LOG_TAG, "In TestTask "+testloginfo.logInfoGet().toString());
 				httpUtils.doPostAsyn(testurl, testloginfo.logInfoGet(), new httpUtils.HttpCallBackListener() {
                     @Override//testurl
                     public void onFinish(String result) {
@@ -644,7 +644,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
                     	// message.obj = result;
                     	// handler.sendMessage(message);
                     	// // testmsgbuf.removeFirst();
-                    	Log.d(LOG_TAG,"result: "+result);
+                    	// Log.d(LOG_TAG,"result: "+result);
                     }
 
                     @Override
@@ -930,12 +930,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	Handler delayhandler = new Handler(){
 		@Override
 		public void handleMessage(Message msg){
-			Log.d(LOG_TAG,"here is delayhandler");
+			// Log.d(LOG_TAG,"--->here is delayhandler");
 			if(msg.what == MESSAGE_DELAY){
 				if(!operateIsOk){
 					app.reparams.put("operate", "1"); //operate failed
 					lockwarncnt = 0;
-					Log.d(LOG_TAG, app.reparams.toString());
+					// Log.d(LOG_TAG, app.reparams.toString());
 					httpUtils.doPostAsyn(app.url, app.reparams, new httpUtils.HttpCallBackListener() {
 			            @Override
 			            public void onFinish(String result) {
@@ -968,12 +968,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     	public void handleMessage(Message msg){
     		if(msg.what == 1) {
     			ArrayList<String> data = (ArrayList<String>) msg.obj;
-	    		Log.d("Serials", data.toString());
+	    		// Log.d("Serials", data.toString());
 	    		String flag = data.get(8);
 	    		String devid = data.get(4)+data.get(5)+data.get(6)+data.get(7);
 	    		if(flag.equals("00")){
 	    			if(!data.get(1).equals("05")){
-	    				Log.d(LOG_TAG,"---> here is sehandler 07");
+	    				// Log.d(LOG_TAG,"---> here is sehandler 07");
 	    				if(devid.equals("55667788")){	
 		    				if(data.get(9).equals("00")){
 		    					if(lockstruct[0].getlockStatus().equals("1")){
@@ -987,10 +987,10 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 							}
 						}else if(devid.equals("55667789")){
 							if(data.get(9).equals("00")){
-								Log.d(LOG_TAG,"---> before:"+lockstruct[3].getlockStatus());
+								// Log.d(LOG_TAG,"---> before:"+lockstruct[3].getlockStatus());
 		    					if(lockstruct[3].getlockStatus().equals("1")){
 		    						is_warned_wdy=true;		    						
-		    						Log.d(LOG_TAG,"--->is_warned_wdy=true;");
+		    						// Log.d(LOG_TAG,"--->is_warned_wdy=true;");
 		    					}
 								lockstruct[3].setlockStatus("0");
 								tx[3].setText(lockstruct[3].getlockName()+"\t"+lockstruct[3].getlockStatus());
@@ -1012,7 +1012,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 							
 						}
 	    			}else if(data.get(1).equals("05")){
-	    				Log.d(LOG_TAG,"---> here is sehandler 05");
+	    				// Log.d(LOG_TAG,"---> here is sehandler 05");
 	    				opparams.put("trucknumber", "浙A1234");
 	    				if(devid.equals("55667788")){	
 		    				if(data.get(9).equals("00")){
@@ -1040,7 +1040,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 						  //   	});
     operateIsOk=true;
 	app.reparams.put("operate", "0"); //operate success
-	Log.d(LOG_TAG, app.reparams.toString());
+	// Log.d(LOG_TAG, app.reparams.toString());
 	httpUtils.doPostAsyn(app.url, app.reparams, new httpUtils.HttpCallBackListener() {
         @Override
         public void onFinish(String result) {
@@ -1080,7 +1080,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 						  //   	});
 	operateIsOk=true;
 	app.reparams.put("operate", "0"); //operate success
-	Log.d(LOG_TAG, app.reparams.toString());
+	// Log.d(LOG_TAG, app.reparams.toString());
 	httpUtils.doPostAsyn(app.url, app.reparams, new httpUtils.HttpCallBackListener() {
         @Override
         public void onFinish(String result) {
@@ -1114,7 +1114,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 						loginfo.typeSet("1");
 						warnmsgbuf.add(loginfo.logInfoGet());
 						loginfo.haswarnSet("0");
-						// Log.d(LOG_TAG,"--->warnmsgbuf added");
+						Log.d(LOG_TAG,"--->warnmsgbuf added");
 						//let camera app catch videos
 						Intent intent=new Intent();
 						intent.setAction("action_scsy_warn");
@@ -1198,24 +1198,25 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	    			//}
 	    		}else if(flag.equals("02")){//weight data
 
-	    		}else if(flag.equals("03")){//power 
-	    			// powerval upload to loginfo
-	    			int powerval = Integer.parseInt(data.get(9),16);
-	    			Log.d("Serials", "powerval: "+String.valueOf(powerval));
-	    			if(devid.equals("55667788")){	
-						lockstruct[0].setpowerVal(String.valueOf(powerval));
-						tx[6].setText("\t"+lockstruct[0].getpowerVal());
-					}else if(devid.equals("55667789")){
-						lockstruct[3].setpowerVal(String.valueOf(powerval));
-						tx[9].setText("\t"+lockstruct[3].getpowerVal());
-					}else if(devid.equals("55667790")){
-						lockstruct[4].setpowerVal(String.valueOf(powerval));
-						tx[10].setText("\t"+lockstruct[4].getpowerVal());
-					}
-	    			if(powerval < 10){
-	    				tLogView.setText("warn powerval: "+devid+String.valueOf(powerval));
-	    			}
-	    		}	
+	    		}
+	    // 		else if(flag.equals("03")){//power 
+	    // 			// powerval upload to loginfo
+	    // 			int powerval = Integer.parseInt(data.get(9),16);
+	    // 			// Log.d("Serials", "powerval: "+String.valueOf(powerval));
+	    // 			if(devid.equals("55667788")){	
+					// 	lockstruct[0].setpowerVal(String.valueOf(powerval));
+					// 	tx[6].setText("\t"+lockstruct[0].getpowerVal());
+					// }else if(devid.equals("55667789")){
+					// 	lockstruct[3].setpowerVal(String.valueOf(powerval));
+					// 	tx[9].setText("\t"+lockstruct[3].getpowerVal());
+					// }else if(devid.equals("55667790")){
+					// 	lockstruct[4].setpowerVal(String.valueOf(powerval));
+					// 	tx[10].setText("\t"+lockstruct[4].getpowerVal());
+					// }
+	    // 			if(powerval < 10){
+	    // 				tLogView.setText("warn powerval: "+devid+String.valueOf(powerval));
+	    // 			}
+	    // 		}	
     		}
     		
     	}
@@ -1323,7 +1324,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 							  		loginfo.typeflagSet("4");
 								  	loginfo.typeSet("4");
 								  	warnmsgbuf.add(loginfo.logInfoGet());
-									logInfo.haswarnSet("0");
+									loginfo.haswarnSet("0");
 							  		// sidcnt = 0;
 							  		// mlocalcapture.setCapturePath(0);
 							  		Intent intent=new Intent();
@@ -1464,7 +1465,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
 			//Toast.makeText(LedActivity.this, action, Toast.LENGTH_LONG).show();
-			Log.e(LOG_TAG, "action:" + action);
+			// Log.e(LOG_TAG, "action:" + action);
 			if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
 				UsbDevice deviceFound = (UsbDevice) intent
 						.getParcelableExtra(UsbManager.EXTRA_DEVICE);
@@ -1498,7 +1499,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 					//mlocalcapture.setCapturePath(0);
 					loginfo.speedSet(150);
 					HashMap<String, String> tem = loginfo.logInfoGet();
-					Log.d(LOG_TAG, tem.toString());
+					// Log.d(LOG_TAG, tem.toString());
 					httpUtils.doPostAsyn(url, tem, new httpUtils.HttpCallBackListener() {
                     @Override
                     public void onFinish(String result) {
@@ -1609,7 +1610,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			gpsy = String.format("%.9f", location.getLatitude());
 			speed = location.getSpeed();
 			String gpsInfo="gpsx: "+gpsx+"\t"+"gpsy: "+gpsy+"\t"+"gpsspeed: "+speed;
-			Log.d("GPS", gpsInfo);
+			// Log.d("GPS", gpsInfo);
 			Toast.makeText(LedActivity.this, gpsInfo, Toast.LENGTH_SHORT).show();
 			tx[17].setText(gpsInfo);
 			loginfo.gpsSet(gpsx,gpsy);
@@ -1623,25 +1624,25 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 
 			@Override
 			public void onLocationChanged(Location location){
-				Log.i("GPS","onLocationChanged");
+				// Log.i("GPS","onLocationChanged");
 				updateLocation(location);
 			}
 
 			@Override
 			public void onProviderDisabled(String arg0){
-				Log.e("GPS", arg0);
+				// Log.e("GPS", arg0);
 			}
 
 			@Override
 			public void onProviderEnabled(String provider){
-				Log.i("GPS", provider);
+				// Log.i("GPS", provider);
 				location = lm1.getLastKnownLocation(provider);
 				updateLocation(location);
 			}
 
 			@Override
 			public void onStatusChanged(String arg0, int arg1, Bundle arg2){
-				Log.i("GPS", "onStatusChanged");
+				// Log.i("GPS", "onStatusChanged");
 			}
 		};
 
