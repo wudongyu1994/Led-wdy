@@ -12,14 +12,7 @@
             android:id="@+id/button1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@null" />
-
-        <CheckBox
-            android:id="@+id/cb_Lock1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:text="@string/cb_Lock1" />
+            android:text="test" />
 
         <CheckBox
             android:id="@+id/cb_Lock2"
@@ -43,260 +36,171 @@
 
     </LinearLayout>
 
+    
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
 
-        <FrameLayout
-            android:id="@+id/fragment_main"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="0.28" >
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+        	android:layout_height="wrap_content"
+   		 	android:orientation="horizontal" >
+            <TextView
+                android:id="@+id/tx_Lock1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.2"
+                android:text="@string/tx_Lock1"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+            <TextView
+                android:id="@+id/tx_Lock2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.2"
+                android:text="@string/tx_Lock2"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+            
+
+            <TextView
+                android:id="@+id/tx_Lock3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.2"
+                android:text="@string/tx_Lock3"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+            
+
+            <TextView
+                android:id="@+id/tx_Lock4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.2"
+                android:text="@string/tx_Lock4"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+            
+
+            <TextView
+                android:id="@+id/tx_Lock5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.2"
+                android:text="@string/tx_Lock5"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+            </LinearLayout>
+            
+        
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            
+            <TextView
+                android:id="@+id/tx_leakleft"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="@string/tx_leakleft"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+            
+            <TextView 
+                android:id="@+id/tx_leakright"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight= "0.5"
+                android:text="@string/tx_leakright"
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
+            
+        </LinearLayout>
+        
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            
+            <TextView
+                android:id="@+id/tx_lefttire"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="@string/tx_lefttire"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+            
+            <TextView 
+                android:id="@+id/tx_lefttemp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight= "0.5"
+                android:text="@string/tx_lefttemp"
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
+            
+        </LinearLayout>
+        
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            
+            <TextView
+                android:id="@+id/tx_righttire"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="@string/tx_righttire"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+            
+            <TextView 
+                android:id="@+id/tx_righttemp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight= "0.5"
+                android:text="@string/tx_righttemp"
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+            
+            
+        </LinearLayout>
+
+        <TextView 
+                android:id="@+id/tx_gps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tx_gps"
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
+                
+       
+        <TextView
+            android:id="@+id/postview"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:text="@null"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+       
+        <ScrollView
+            android:id="@+id/scrollView1"
+            android:layout_width="match_parent"
+            android:layout_height="100dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical" >
 
-                <LinearLayout 
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    
-                    <TextView
-                        android:id="@+id/tx_Lock1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:text="@string/tx_Lock1"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
-                    
-                    <TextView 
-                        android:id="@+id/tx_Power1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight= "0.5"
-                        android:text="@string/tx_Power1"
-                        android:textAppearance="?android:attr/textAppearanceLarge"/>
-                    
-                </LinearLayout>
-                
-
-                <LinearLayout 
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    
-                    <TextView
-                        android:id="@+id/tx_Lock2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:text="@string/tx_Lock2"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
-                    
-                    <TextView 
-                        android:id="@+id/tx_Power2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight= "0.5"
-                        android:text="@string/tx_Power2"
-                        android:textAppearance="?android:attr/textAppearanceLarge"/>
-                    
-               </LinearLayout>
-
-               <LinearLayout 
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    
-                    <TextView
-                        android:id="@+id/tx_Lock3"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:text="@string/tx_Lock3"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
-                    
-                    <TextView 
-                        android:id="@+id/tx_Power3"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight= "0.5"
-                        android:text="@string/tx_Power3"
-                        android:textAppearance="?android:attr/textAppearanceLarge"/>
-                    
-               </LinearLayout>
-
-               <LinearLayout 
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    
-                    <TextView
-                        android:id="@+id/tx_Lock4"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:text="@string/tx_Lock4"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
-                    
-                    <TextView 
-                        android:id="@+id/tx_Power4"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight= "0.5"
-                        android:text="@string/tx_Power4"
-                        android:textAppearance="?android:attr/textAppearanceLarge"/>
-                    
-                </LinearLayout>
-
-                <LinearLayout 
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    
-                    <TextView
-                        android:id="@+id/tx_Lock5"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:text="@string/tx_Lock5"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
-                    
-                    <TextView 
-                        android:id="@+id/tx_Power5"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight= "0.5"
-                        android:text="@string/tx_Power5"
-                        android:textAppearance="?android:attr/textAppearanceLarge"/>
-                    
-                </LinearLayout>
-                
-                <LinearLayout 
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    
-                    <TextView
-                        android:id="@+id/tx_leakleft"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:text="@string/tx_leakleft"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
-                    
-                    <TextView 
-                        android:id="@+id/tx_leakright"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight= "0.5"
-                        android:text="@string/tx_leakright"
-                        android:textAppearance="?android:attr/textAppearanceLarge"/>
-                    
-                </LinearLayout>
-                
-                <LinearLayout 
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    
-                    <TextView
-                        android:id="@+id/tx_lefttire"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:text="@string/tx_lefttire"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
-                    
-                    <TextView 
-                        android:id="@+id/tx_lefttemp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight= "0.5"
-                        android:text="@string/tx_lefttemp"
-                        android:textAppearance="?android:attr/textAppearanceLarge"/>
-                    
-                </LinearLayout>
-                
-                <LinearLayout 
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    
-                    <TextView
-                        android:id="@+id/tx_righttire"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:text="@string/tx_righttire"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
-                    
-                    <TextView 
-                        android:id="@+id/tx_righttemp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight= "0.5"
-                        android:text="@string/tx_righttemp"
-                        android:textAppearance="?android:attr/textAppearanceLarge"/>
-
-                    
-                    
-                </LinearLayout>
-
-                <TextView 
-                        android:id="@+id/tx_gps"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tx_gps"
-                        android:textAppearance="?android:attr/textAppearanceLarge"/>
-                        
-                <View
-                    android:layout_width="wrap_content"
-                    android:layout_height="13dp" />
-
                 <TextView
-                    android:id="@+id/postview"
+                    android:id="@+id/receiveview"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:text="@null"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
 
-                <View
-                    android:layout_width="wrap_content"
-                    android:layout_height="11dp" />
-
-                <ScrollView
-                    android:id="@+id/scrollView1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="16.96" >
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="10"
-                        android:orientation="vertical" >
-
-                        <TextView
-                            android:id="@+id/receiveview"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="10"
-                            android:text="@null"
-                            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-                    </LinearLayout>
-
-                </ScrollView>
-
             </LinearLayout>
 
-            <requestFocus />
-
-        </FrameLayout>
-
-        <FrameLayout
-            android:id="@+id/fragment_video"
-            android:layout_width="478dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.02" >
-
-        </FrameLayout>
+        </ScrollView>
 
     </LinearLayout>
+
+
+
+        
+
 
 </LinearLayout>

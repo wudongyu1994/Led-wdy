@@ -227,7 +227,6 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		app = (ReGetuiApplication) getApplicationContext();
 		
 		//获取xml中对应的控件
-		cb[0] = (CheckBox) findViewById(R.id.cb_Lock1);
 		cb[1] = (CheckBox) findViewById(R.id.cb_Lock2);
 		cb[2] = (CheckBox) findViewById(R.id.cb_Lock3);
 		
@@ -237,11 +236,6 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		tx[3] = (TextView) findViewById(R.id.tx_Lock4);
 		tx[4] = (TextView) findViewById(R.id.tx_Lock5);
 		tx[5] = (TextView) findViewById(R.id.postview);
-		tx[6] = (TextView) findViewById(R.id.tx_Power1);
-		tx[7] = (TextView) findViewById(R.id.tx_Power2);
-		tx[8] = (TextView) findViewById(R.id.tx_Power3);
-		tx[9] = (TextView) findViewById(R.id.tx_Power4);
-		tx[10] = (TextView) findViewById(R.id.tx_Power5);
 		tx[11] = (TextView) findViewById(R.id.tx_leakleft);
 		tx[12] = (TextView) findViewById(R.id.tx_leakright);
 		tx[13] = (TextView) findViewById(R.id.tx_lefttire);
@@ -390,7 +384,6 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 				LedActivity.this.getApplicationContext().sendBroadcast(intent);
 				location = lm1.getLastKnownLocation(bestProvider);
 				updateLocation(location);
-
 			}
 		});
 		
