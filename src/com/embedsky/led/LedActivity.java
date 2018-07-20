@@ -47,6 +47,7 @@ import Decoder.BASE64Decoder;
 import Decoder.BASE64Encoder;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -470,9 +471,27 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 * 以上时onCreate() & onDestroy()，以下是各种子线程定义
 *******************************************************************************************/
 
-    private CountDownTimer timerWake=new CountDownTimer(2*60*1000,2*60*1000) {
+    private CountDownTimer timerWake=new CountDownTimer(2*60*1000,1*60*1000) {
         @Override
-        public void onTick(long l) {}
+        public void onTick(long l) {
+        	if (!isRunningForeground(LedActivity.this)) {
+                //获取ActivityManager
+                ActivityManager mAm = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
+                //获得当前运行的task
+                List<ActivityManager.RunningTaskInfo> taskList = mAm.getRunningTasks(100);
+                for (ActivityManager.RunningTaskInfo rti : taskList) {
+                    //找到当前应用的task，并启动task的栈顶activity，达到程序切换到前台
+                    if (rti.topActivity.getPackageName().equals(getPackageName())) {
+                        mAm.moveTaskToFront(rti.id, 0);
+                        return;
+                    }
+                }
+                //若没有找到运行的task，用户结束了task或被系统释放，则重新启动mainactivity
+                Intent resultIntent = new Intent(LedActivity.this, LedActivity.class);
+                resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(resultIntent);
+            }
+        }
 
         @Override
         public void onFinish() {    //5分钟后没有收到广播，则重新开启另一个app
@@ -1691,5 +1710,20 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
             }
         }
     }
-		
+	
+	public static boolean isRunningForeground(Context context) {
+        ActivityManager activityManager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> appProcessInfos = activityManager.getRunningAppProcesses();
+        // 枚举进程
+        for (ActivityManager.RunningAppProcessInfo appProcessInfo : appProcessInfos) {
+            if (appProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                if (appProcessInfo.processName.equals(context.getApplicationInfo().processName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
 }

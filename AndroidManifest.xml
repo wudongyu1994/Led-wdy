@@ -10,7 +10,12 @@
         android:targetSdkVersion="22"/>
 
     <uses-feature android:name="android.hardware.usb.host" />
-    
+    <!--前后台的切换-->
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL"/>
+    <uses-permission android:name="android.permission.GET_TOP_ACTIVITY_INFO"/>
+    <uses-permission android:name="android.permission.REORDER_TASKS"/>
+
     <uses-permission android:name="android.hardware.usb.host" />
     <uses-permission android:name="android.permission.HARDWARE_TEST" />
     
