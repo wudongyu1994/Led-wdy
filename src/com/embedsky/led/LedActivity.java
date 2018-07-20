@@ -200,7 +200,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	
 	//退出按钮   
 	Button btnQuit;
-	Button btn1;
+	Button btn1,btn2;
 
 	private LocationManager lm1;
 
@@ -251,6 +251,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		
 		btnQuit = (Button) findViewById(R.id.btnQuit);
 		btn1=(Button) findViewById(R.id.button1);
+		btn2=(Button) findViewById(R.id.button2);
 		//初始化点击事件对象
 		MyClickListener myClickListern = new MyClickListener();
 		
@@ -302,6 +303,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		
 		cnt = 0;
 		
+		PackageManager packageManager = getPackageManager();
+        Intent intent = packageManager.getLaunchIntentForPackage("cn.assassing.camtest");
+        if (intent != null) {
+            startActivity(intent);
+        }
+            
 		//个推初始化
 		PushManager push=PushManager.getInstance();
 		push.initialize(this.getApplicationContext(),GetuiPushService.class);
@@ -387,6 +394,20 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 				updateLocation(location);
 			}
 		});
+
+		btn2.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				PackageManager packageManager = getPackageManager();
+	            Intent intent = packageManager.getLaunchIntentForPackage("cn.assassing.camtest");
+	            if (intent != null) {
+	                startActivity(intent);
+	            }
+	            timer.start();
+			}
+		});
 		
 		//can总线初始化
 		mycanservice = IMycanService.Stub.asInterface(ServiceManager.getService("mycan"));
@@ -449,7 +470,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 * 以上时onCreate() & onDestroy()，以下是各种子线程定义
 *******************************************************************************************/
 
-    private CountDownTimer timerWake=new CountDownTimer(5*60*1000,2*60*1000) {
+    private CountDownTimer timerWake=new CountDownTimer(2*60*1000,2*60*1000) {
         @Override
         public void onTick(long l) {}
 
