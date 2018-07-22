@@ -309,6 +309,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
         if (intent != null) {
             startActivity(intent);
         }
+        Log.d("wdy","open hicam end");
             
 		//个推初始化
 		PushManager push=PushManager.getInstance();
@@ -471,26 +472,27 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 * 以上时onCreate() & onDestroy()，以下是各种子线程定义
 *******************************************************************************************/
 
-    private CountDownTimer timerWake=new CountDownTimer(2*60*1000,1*60*1000) {
+    private CountDownTimer timerWake=new CountDownTimer(2*60*1000,1*20*1000) {
         @Override
         public void onTick(long l) {
-        	if (!isRunningForeground(LedActivity.this)) {
-                //获取ActivityManager
-                ActivityManager mAm = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
-                //获得当前运行的task
-                List<ActivityManager.RunningTaskInfo> taskList = mAm.getRunningTasks(100);
-                for (ActivityManager.RunningTaskInfo rti : taskList) {
-                    //找到当前应用的task，并启动task的栈顶activity，达到程序切换到前台
-                    if (rti.topActivity.getPackageName().equals(getPackageName())) {
-                        mAm.moveTaskToFront(rti.id, 0);
-                        return;
-                    }
-                }
-                //若没有找到运行的task，用户结束了task或被系统释放，则重新启动mainactivity
-                Intent resultIntent = new Intent(LedActivity.this, LedActivity.class);
-                resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(resultIntent);
-            }
+        	// Log.d("wdy","isFore = "+isRunningForeground(LedActivity.this));
+        	// if (!isRunningForeground(LedActivity.this)) {
+         //        //获取ActivityManager
+         //        ActivityManager mAm = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
+         //        //获得当前运行的task
+         //        List<ActivityManager.RunningTaskInfo> taskList = mAm.getRunningTasks(100);
+         //        for (ActivityManager.RunningTaskInfo rti : taskList) {
+         //            //找到当前应用的task，并启动task的栈顶activity，达到程序切换到前台
+         //            if (rti.topActivity.getPackageName().equals(getPackageName())) {
+         //                mAm.moveTaskToFront(rti.id, 0);
+         //                return;
+         //            }
+         //        }
+         //        //若没有找到运行的task，用户结束了task或被系统释放，则重新启动mainactivity
+         //        Intent resultIntent = new Intent(LedActivity.this, LedActivity.class);
+         //        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+         //        startActivity(resultIntent);
+         //    }
         }
 
         @Override
