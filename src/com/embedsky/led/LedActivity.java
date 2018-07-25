@@ -304,12 +304,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		
 		cnt = 0;
 		
-		PackageManager packageManager = getPackageManager();
-        Intent intent = packageManager.getLaunchIntentForPackage("cn.assassing.camtest");
-        if (intent != null) {
-            startActivity(intent);
-        }
-        Log.d("wdy","open hicam end");
+		
             
 		//个推初始化
 		PushManager push=PushManager.getInstance();
@@ -440,6 +435,13 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		time.schedule(warnpacktask, 6000, 20000);// 6s后执行 warnpacktask,T=20s
 		timer.start();
 		timerWake.start();
+
+		PackageManager packageManager = getPackageManager();
+        Intent intent = packageManager.getLaunchIntentForPackage("cn.assassing.camtest");
+        if (intent != null) {
+            startActivity(intent);
+        }
+        Log.d("wdy","open hicam end");
 	}//end onCreate
 
     @Override
@@ -472,7 +474,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 * 以上时onCreate() & onDestroy()，以下是各种子线程定义
 *******************************************************************************************/
 
-    private CountDownTimer timerWake=new CountDownTimer(2*60*1000,1*20*1000) {
+    private CountDownTimer timerWake=new CountDownTimer(2*20*1000,1*20*1000) {
         @Override
         public void onTick(long l) {
         	// Log.d("wdy","isFore = "+isRunningForeground(LedActivity.this));
@@ -502,7 +504,8 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
             if (intent != null) {
                 startActivity(intent);
             }
-            timer.start();
+            timerWake.start();
+            Log.d("wdy","open hicam end");
         }
     };
     
