@@ -100,7 +100,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 
 	private static final String LOG_TAG = "lock";
 	public static String AWAKE_ACTION = "action_awake";
-	private AwakeBroadcastReceiver awakeBroadcastReceiver;
+	// private AwakeBroadcastReceiver awakeBroadcastReceiver;
 	//handler msg.what
 	private final int MESSAGE_GETUI = 0x100;
 	private final int MESSAGE_HEARTPACKAGE = 0x101;
@@ -397,12 +397,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				PackageManager packageManager = getPackageManager();
-	            Intent intent = packageManager.getLaunchIntentForPackage("cn.assassing.camtest");
-	            if (intent != null) {
-	                startActivity(intent);
-	            }
-	            timer.start();
+				// PackageManager packageManager = getPackageManager();
+	   //          Intent intent = packageManager.getLaunchIntentForPackage("cn.assassing.camtest");
+	   //          if (intent != null) {
+	   //              startActivity(intent);
+	   //          }
+	   //          timer.start();
 			}
 		});
 		
@@ -421,10 +421,10 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		executorService.execute(mReadThread);
 		executorService.execute(mCanRev);
 
-		IntentFilter filter = new IntentFilter();
-        filter.addAction(AWAKE_ACTION);
-        awakeBroadcastReceiver = new AwakeBroadcastReceiver();
-        LedActivity.this.getApplicationContext().registerReceiver(awakeBroadcastReceiver, filter);
+		// IntentFilter filter = new IntentFilter();
+  //       filter.addAction(AWAKE_ACTION);
+  //       awakeBroadcastReceiver = new AwakeBroadcastReceiver();
+  //       LedActivity.this.getApplicationContext().registerReceiver(awakeBroadcastReceiver, filter);
 		
 		//timer.schedule(task, 5000, 60000); // 5s后执行task,经过60s再次执行
 		heartpacktask = new HeartpackTask();
@@ -434,14 +434,14 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		time.schedule(heartpacktask, 10000, 60000);// 10s后执行 heartpacktask,T=60s
 		time.schedule(warnpacktask, 6000, 20000);// 6s后执行 warnpacktask,T=20s
 		timer.start();
-		timerWake.start();
+		// timerWake.start();
 
-		PackageManager packageManager = getPackageManager();
-        Intent intent = packageManager.getLaunchIntentForPackage("cn.assassing.camtest");
-        if (intent != null) {
-            startActivity(intent);
-        }
-        Log.d("wdy","open hicam end");
+		// PackageManager packageManager = getPackageManager();
+  //       Intent intent = packageManager.getLaunchIntentForPackage("cn.assassing.camtest");
+  //       if (intent != null) {
+  //           startActivity(intent);
+  //       }
+  //       Log.d("wdy","open hicam end");
 	}//end onCreate
 
     @Override
@@ -473,10 +473,13 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 /******************************************************************************************
 * 以上时onCreate() & onDestroy()，以下是各种子线程定义
 *******************************************************************************************/
+	/*
+	 * 唤醒hicam app
+	 */
 
-    private CountDownTimer timerWake=new CountDownTimer(2*20*1000,1*20*1000) {
-        @Override
-        public void onTick(long l) {
+    // private CountDownTimer timerWake=new CountDownTimer(2*20*1000,1*20*1000) {
+    //     @Override
+    //     public void onTick(long l) {
         	// Log.d("wdy","isFore = "+isRunningForeground(LedActivity.this));
         	// if (!isRunningForeground(LedActivity.this)) {
          //        //获取ActivityManager
@@ -495,20 +498,23 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
          //        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
          //        startActivity(resultIntent);
          //    }
-        }
+    //     }
 
-        @Override
-        public void onFinish() {    //5分钟后没有收到广播，则重新开启另一个app
-            PackageManager packageManager = getPackageManager();
-            Intent intent = packageManager.getLaunchIntentForPackage("cn.assassing.camtest");
-            if (intent != null) {
-                startActivity(intent);
-            }
-            timerWake.start();
-            Log.d("wdy","open hicam end");
-        }
-    };
+    //     @Override
+    //     public void onFinish() {    //5分钟后没有收到广播，则重新开启另一个app
+    //         PackageManager packageManager = getPackageManager();
+    //         Intent intent = packageManager.getLaunchIntentForPackage("cn.assassing.camtest");
+    //         if (intent != null) {
+    //             startActivity(intent);
+    //         }
+    //         timerWake.start();
+    //         Log.d("wdy","open hicam end");
+    //     }
+    // };
     
+    /*
+     * 疲劳驾驶报警
+     */
 	private CountDownTimer timer = new CountDownTimer(4*60*60*1000,60*1000){	//4 hours, tick 1 min
     	@Override
     	public void onTick(long millisUntilFinished){
@@ -1707,14 +1713,14 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		}
 	};
 	
-	private class AwakeBroadcastReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals(AWAKE_ACTION)){
-                timerWake.start();  //收到广播则重新让timer复位
-            }
-        }
-    }
+	// private class AwakeBroadcastReceiver extends BroadcastReceiver {
+ //        @Override
+ //        public void onReceive(Context context, Intent intent) {
+ //            if(intent.getAction().equals(AWAKE_ACTION)){
+ //                timerWake.start();  //收到广播则重新让timer复位
+ //            }
+ //        }
+ //    }
 	
 	public static boolean isRunningForeground(Context context) {
         ActivityManager activityManager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
