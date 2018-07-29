@@ -225,6 +225,8 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		setContentView(R.layout.main);
 		// Log.i(LOG_TAG,"begin onCreate()");
 
+		
+		
 		context = LedActivity.this.getApplicationContext();
 		app = (ReGetuiApplication) getApplicationContext();
 		
@@ -414,27 +416,22 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			canhandler = new mycanHandler();
 		}
 
-		canCnt = 0;
-		disCnt = 0;
-		ReadThread mReadThread = new ReadThread();
-		CanRev mCanRev = new CanRev();
-		executorService.execute(mReadThread);
-		executorService.execute(mCanRev);
-
-		// IntentFilter filter = new IntentFilter();
-  //       filter.addAction(AWAKE_ACTION);
-  //       awakeBroadcastReceiver = new AwakeBroadcastReceiver();
-  //       LedActivity.this.getApplicationContext().registerReceiver(awakeBroadcastReceiver, filter);
-		
 		//timer.schedule(task, 5000, 60000); // 5s后执行task,经过60s再次执行
 		heartpacktask = new HeartpackTask();
 		warnpacktask = new WarnpackTask();
-		sendtime.schedule(cansendtask, 1000, 1000);// 1s后执行 cansendtask,T=1s
+		sendtime.schedule(cansendtask, 10, 1000);// 1s后执行 cansendtask,T=1s
 		sendtime.schedule(serialssendtask, 1500, 2000);// 1.5s后执行 serialssendtask,T=1s
 		time.schedule(heartpacktask, 10000, 60000);// 10s后执行 heartpacktask,T=60s
 		time.schedule(warnpacktask, 6000, 20000);// 6s后执行 warnpacktask,T=20s
 		timer.start();
 		// timerWake.start();
+		
+		// IntentFilter filter = new IntentFilter();
+  //       filter.addAction(AWAKE_ACTION);
+  //       awakeBroadcastReceiver = new AwakeBroadcastReceiver();
+  //       LedActivity.this.getApplicationContext().registerReceiver(awakeBroadcastReceiver, filter);
+		
+		
 
 		// PackageManager packageManager = getPackageManager();
   //       Intent intent = packageManager.getLaunchIntentForPackage("cn.assassing.camtest");
@@ -442,6 +439,14 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
   //           startActivity(intent);
   //       }
   //       Log.d("wdy","open hicam end");
+  //       
+        
+		canCnt = 0;
+		disCnt = 0;
+		ReadThread mReadThread = new ReadThread();
+		CanRev mCanRev = new CanRev();
+		executorService.execute(mReadThread);
+		executorService.execute(mCanRev);
 	}//end onCreate
 
     @Override
@@ -552,7 +557,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 				mycanservice.mycansend(0x18DB33F1,8,1,0,0,1);
 				canCnt += 1;
 				canCnt = canCnt==5?0:canCnt;
-				//Log.d(LOG_TAG, "Mycan SEND");
+				Log.d("wdy", "---> cansendtask ending");
 			}catch(RemoteException e){
 				e.printStackTrace();
 			}
@@ -955,10 +960,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		    while(true){
 				try{
 					//Thread.sleep(1000);
+					Log.d("wdy","--->in CanRev");
 					ret = mycanservice.mycandump(0x00000000,0x00000000);
 					if(ret == 0){
 						Message msg = new Message();
-				    		msg.what = mycanservice.get_id();
+				    	msg.what = mycanservice.get_id();
+				    	Log.d("wdy","--->can id: "+msg.what);
 						List<Integer> res = new ArrayList<Integer>();
 						for(int i=0;i<8;i++){
 							res.add(mycanservice.get_data(i));
@@ -1295,10 +1302,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	public class mycanHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
+			Log.d("wdy","--->in mycanHandler");
             if (msg.what != 0) {
 				long id = (Integer) msg.what + 2147483648L;
 				System.out.println(Long.toHexString(id));
 				if(id == 0x18FEF433){
+					Log.d("wdy","--->in 433!");
 					ArrayList<Integer> res =(ArrayList<Integer>) msg.obj;
 					//Log.d(LOG_TAG, res.toString());
 					int tirepos = res.get(0);
