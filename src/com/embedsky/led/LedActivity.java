@@ -419,11 +419,11 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		//timer.schedule(task, 5000, 60000); // 5s后执行task,经过60s再次执行
 		heartpacktask = new HeartpackTask();
 		warnpacktask = new WarnpackTask();
-		sendtime.schedule(cansendtask, 10, 1000);// 1s后执行 cansendtask,T=1s
-		sendtime.schedule(serialssendtask, 1500, 2000);// 1.5s后执行 serialssendtask,T=1s
-		time.schedule(heartpacktask, 10000, 60000);// 10s后执行 heartpacktask,T=60s
-		time.schedule(warnpacktask, 6000, 20000);// 6s后执行 warnpacktask,T=20s
-		timer.start();
+		sendtime.schedule(cansendtask, 10, 1*1000);// 1s后执行 cansendtask,T=1s
+		sendtime.schedule(serialssendtask, 1500, 2*1000);// 1.5s后执行 serialssendtask,T=1s
+		time.schedule(heartpacktask, 10*1000, 90*1000);// 10s后执行 heartpacktask,T=60s
+		time.schedule(warnpacktask, 6*1000, 20*1000);// 6s后执行 warnpacktask,T=20s
+		timer.start();	// 疲劳驾驶报警timer
 		// timerWake.start();
 		
 		// IntentFilter filter = new IntentFilter();
