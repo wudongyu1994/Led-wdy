@@ -421,9 +421,9 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		warnpacktask = new WarnpackTask();
 		sendtime.schedule(cansendtask, 10, 1*1000);// 1s后执行 cansendtask,T=1s
 		sendtime.schedule(serialssendtask, 1500, 2*1000);// 1.5s后执行 serialssendtask,T=1s
-		time.schedule(heartpacktask, 10*1000, 90*1000);// 10s后执行 heartpacktask,T=60s
+		time.schedule(heartpacktask, 10*1000, 60*1000);// 10s后执行 heartpacktask,T=60s
 		time.schedule(warnpacktask, 6*1000, 20*1000);// 6s后执行 warnpacktask,T=20s
-		timer.start();	// 疲劳驾驶报警timer
+		// timer.start();	// 疲劳驾驶报警timer
 		// timerWake.start();
 		
 		// IntentFilter filter = new IntentFilter();
@@ -520,22 +520,22 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     /*
      * 疲劳驾驶报警
      */
-	private CountDownTimer timer = new CountDownTimer(4*60*60*1000,60*1000){	//4 hours, tick 1 min
-    	@Override
-    	public void onTick(long millisUntilFinished){
-			if(v<3 || speed<3){		
-				timer.start();
-			}		
-    	}
-    	@Override
-    	public void onFinish(){    		
-			loginfo.haswarnSet("1");
-		  	loginfo.typeSet("7");
-		  	warnmsgbuf.add(loginfo.logInfoGet());
-			loginfo.haswarnSet("0");
-			timer.start();
-    	}
-    };
+	// private CountDownTimer timer = new CountDownTimer(4*60*60*1000,60*1000){	//4 hours, tick 1 min
+ //    	@Override
+ //    	public void onTick(long millisUntilFinished){
+	// 		if(v<3 || speed<3){		
+	// 			timer.start();
+	// 		}		
+ //    	}
+ //    	@Override
+ //    	public void onFinish(){    		
+	// 		loginfo.haswarnSet("1");
+	// 	  	loginfo.typeSet("7");
+	// 	  	warnmsgbuf.add(loginfo.logInfoGet());
+	// 		loginfo.haswarnSet("0");
+	// 		timer.start();
+ //    	}
+ //    };
 
 	/*
 	 * can send 子线程
