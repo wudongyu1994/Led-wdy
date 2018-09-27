@@ -100,7 +100,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 
 	private static final String LOG_TAG = "lock";
 	public static String AWAKE_ACTION = "action_awake";
-	// private AwakeBroadcastReceiver awakeBroadcastReceiver;
+	private AwakeBroadcastReceiver awakeBroadcastReceiver;
 	//handler msg.what
 	private final int MESSAGE_GETUI = 0x100;
 	private final int MESSAGE_HEARTPACKAGE = 0x101;
@@ -141,15 +141,18 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	protected static LinkedList<String> serialssendbuf = new LinkedList<String>();
 	private static boolean flag;
 	private static int cnt;	
+	private static boolean hasRecBro;
 
 	//Timer timer = new Timer();
 	Timer sendtime = new Timer();
 	Timer time = new Timer();
+	Timer otherTimer =new Timer();
 	ExecutorService executorService = Executors.newFixedThreadPool(3);
 	protected HeartpackTask heartpacktask;
 	protected ParamspackTask paramspacktask;
 	protected WarnpackTask warnpacktask;
 	protected TestTask testtask;
+	protected WakeUpAppTask mWakeUpAppTask;
 
 	//gps
 	Location location;
@@ -305,7 +308,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		//}
 		
 		cnt = 0;
-		
+		hasRecBro=false;
 		
             
 		//个推初始化
@@ -380,7 +383,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			updateLocation(location);
 			lm1.requestLocationUpdates(bestProvider, 1000, 1, locationlistener);	//1000ms=1s,1m,
 		}
-
+		//发送视频监控截图命令，并获取gps信息
 		btn1.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -389,22 +392,23 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 				Intent intent=new Intent();
 				intent.setAction("action_scsy_warn");
 				LedActivity.this.getApplicationContext().sendBroadcast(intent);
+				Log.d("wdy","action_scsy_warn");
+ 
 				location = lm1.getLastKnownLocation(bestProvider);
 				updateLocation(location);
 			}
 		});
-
+		//启动hicam
 		btn2.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				// PackageManager packageManager = getPackageManager();
-	   //          Intent intent = packageManager.getLaunchIntentForPackage("cn.assassing.camtest");
-	   //          if (intent != null) {
-	   //              startActivity(intent);
-	   //          }
-	   //          timer.start();
+				PackageManager packageManager = getPackageManager();
+	            Intent intent = packageManager.getLaunchIntentForPackage("cn.assassing.camtest");
+	            if (intent != null) {
+	                startActivity(intent);
+	            }
 			}
 		});
 		
@@ -419,27 +423,30 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		//timer.schedule(task, 5000, 60000); // 5s后执行task,经过60s再次执行
 		heartpacktask = new HeartpackTask();
 		warnpacktask = new WarnpackTask();
+		mWakeUpAppTask =new WakeUpAppTask();
 		sendtime.schedule(cansendtask, 10, 1*1000);// 1s后执行 cansendtask,T=1s
-		sendtime.schedule(serialssendtask, 1500, 2*1000);// 1.5s后执行 serialssendtask,T=1s
+		sendtime.schedule(serialssendtask, 1500, 2*1000);// 1.5s后执行 serialssendtask,T=2s
 		time.schedule(heartpacktask, 10*1000, 60*1000);// 10s后执行 heartpacktask,T=60s
 		time.schedule(warnpacktask, 6*1000, 20*1000);// 6s后执行 warnpacktask,T=20s
+		otherTimer.schedule(mWakeUpAppTask,20*1000,90*1000);//20s后执行 ,T=90s
 		// timer.start();	// 疲劳驾驶报警timer
 		// timerWake.start();
 		
-		// IntentFilter filter = new IntentFilter();
-  //       filter.addAction(AWAKE_ACTION);
-  //       awakeBroadcastReceiver = new AwakeBroadcastReceiver();
-  //       LedActivity.this.getApplicationContext().registerReceiver(awakeBroadcastReceiver, filter);
+		//注册广播接收器
+		IntentFilter filter = new IntentFilter();
+        filter.addAction(AWAKE_ACTION);
+        awakeBroadcastReceiver = new AwakeBroadcastReceiver();
+        LedActivity.this.getApplicationContext().registerReceiver(awakeBroadcastReceiver, filter);
 		
 		
-
+		//don't open hicam so early
 		// PackageManager packageManager = getPackageManager();
   //       Intent intent = packageManager.getLaunchIntentForPackage("cn.assassing.camtest");
   //       if (intent != null) {
   //           startActivity(intent);
   //       }
   //       Log.d("wdy","open hicam end");
-  //       
+        
         
 		canCnt = 0;
 		disCnt = 0;
@@ -485,28 +492,28 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     // private CountDownTimer timerWake=new CountDownTimer(2*20*1000,1*20*1000) {
     //     @Override
     //     public void onTick(long l) {
-        	// Log.d("wdy","isFore = "+isRunningForeground(LedActivity.this));
-        	// if (!isRunningForeground(LedActivity.this)) {
-         //        //获取ActivityManager
-         //        ActivityManager mAm = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
-         //        //获得当前运行的task
-         //        List<ActivityManager.RunningTaskInfo> taskList = mAm.getRunningTasks(100);
-         //        for (ActivityManager.RunningTaskInfo rti : taskList) {
-         //            //找到当前应用的task，并启动task的栈顶activity，达到程序切换到前台
-         //            if (rti.topActivity.getPackageName().equals(getPackageName())) {
-         //                mAm.moveTaskToFront(rti.id, 0);
-         //                return;
-         //            }
-         //        }
-         //        //若没有找到运行的task，用户结束了task或被系统释放，则重新启动mainactivity
-         //        Intent resultIntent = new Intent(LedActivity.this, LedActivity.class);
-         //        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-         //        startActivity(resultIntent);
-         //    }
+    //     	// Log.d("wdy","isFore = "+isRunningForeground(LedActivity.this));
+    //     	// if (!isRunningForeground(LedActivity.this)) {
+    //      //        //获取ActivityManager
+    //      //        ActivityManager mAm = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
+    //      //        //获得当前运行的task
+    //      //        List<ActivityManager.RunningTaskInfo> taskList = mAm.getRunningTasks(100);
+    //      //        for (ActivityManager.RunningTaskInfo rti : taskList) {
+    //      //            //找到当前应用的task，并启动task的栈顶activity，达到程序切换到前台
+    //      //            if (rti.topActivity.getPackageName().equals(getPackageName())) {
+    //      //                mAm.moveTaskToFront(rti.id, 0);
+    //      //                return;
+    //      //            }
+    //      //        }
+    //      //        //若没有找到运行的task，用户结束了task或被系统释放，则重新启动mainactivity
+    //      //        Intent resultIntent = new Intent(LedActivity.this, LedActivity.class);
+    //      //        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    //      //        startActivity(resultIntent);
+    //         }
     //     }
 
     //     @Override
-    //     public void onFinish() {    //5分钟后没有收到广播，则重新开启另一个app
+    //     public void onFinish() {    //5分钟后没有收到广播，则重新开启一个Cam_app
     //         PackageManager packageManager = getPackageManager();
     //         Intent intent = packageManager.getLaunchIntentForPackage("cn.assassing.camtest");
     //         if (intent != null) {
@@ -520,12 +527,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     /*
      * 疲劳驾驶报警
      */
-	// private CountDownTimer timer = new CountDownTimer(4*60*60*1000,60*1000){	//4 hours, tick 1 min
+	// private CountDownTimer timer = new CountDownTimer(4*60*60*1000,20*1000){	//4 hours, tick 1 min
  //    	@Override
  //    	public void onTick(long millisUntilFinished){
-	// 		if(v<3 || speed<3){		
+	// 		// if(v<3 || speed<3){		
 	// 			timer.start();
-	// 		}		
+	// 		// }		
  //    	}
  //    	@Override
  //    	public void onFinish(){    		
@@ -557,7 +564,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 				mycanservice.mycansend(0x18DB33F1,8,1,0,0,1);
 				canCnt += 1;
 				canCnt = canCnt==5?0:canCnt;
-				Log.d("wdy", "---> cansendtask ending");
+				// Log.d("wdy", "---> cansendtask ending");
 			}catch(RemoteException e){
 				e.printStackTrace();
 			}
@@ -689,6 +696,45 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		}
 	}
 
+	/*
+	 * 唤醒Hi-Cam子线程
+	 * 线程内容：每过90s周期，进入该子线程，检查是否有收到广播。如果没有就要重新唤醒app
+	 */
+	public class WakeUpAppTask extends TimerTask{
+		@Override
+		public void run() {
+			Log.d("wdy","hasRecBro= "+hasRecBro);
+			if(hasRecBro){
+				hasRecBro=false;
+				Log.d("wdy","isFore = "+isRunningForeground(LedActivity.this));
+	        	if (!isRunningForeground(LedActivity.this)) {
+	                //获取ActivityManager
+	                ActivityManager mAm = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
+	                //获得当前运行的task
+	                List<ActivityManager.RunningTaskInfo> taskList = mAm.getRunningTasks(100);
+	                for (ActivityManager.RunningTaskInfo rti : taskList) {
+	                    //找到当前应用的task，并启动task的栈顶activity，达到程序切换到前台
+	                    if (rti.topActivity.getPackageName().equals(getPackageName())) {
+	                        mAm.moveTaskToFront(rti.id, 0);
+	                        return;
+	                    }
+	                }
+	                //若没有找到运行的task，用户结束了task或被系统释放，则重新启动mainactivity
+	                Intent resultIntent = new Intent(LedActivity.this, LedActivity.class);
+	                resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+	                startActivity(resultIntent);
+	            }
+			}
+			else{
+				PackageManager packageManager = getPackageManager();
+	            Intent intent = packageManager.getLaunchIntentForPackage("cn.assassing.camtest");
+	            if (intent != null) {
+	                startActivity(intent);
+	            }
+	            Log.d("wdy","open hicam end");
+			}
+		}
+	}
 	/*
 	 * test upload子线程
 	 * 线程内容：每过？？周期，进入该子线程，上传测试包。
@@ -960,12 +1006,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		    while(true){
 				try{
 					//Thread.sleep(1000);
-					Log.d("wdy","--->in CanRev");
+					// Log.d("wdy","--->in CanRev");
 					ret = mycanservice.mycandump(0x00000000,0x00000000);
 					if(ret == 0){
 						Message msg = new Message();
 				    	msg.what = mycanservice.get_id();
-				    	Log.d("wdy","--->can id: "+msg.what);
+				    	// Log.d("can","--->can id: "+msg.what);
 						List<Integer> res = new ArrayList<Integer>();
 						for(int i=0;i<8;i++){
 							res.add(mycanservice.get_data(i));
@@ -1192,6 +1238,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 						Intent intent=new Intent();
 						intent.setAction("action_scsy_warn");
 						LedActivity.this.getApplicationContext().sendBroadcast(intent);
+				Log.d("wdy","action_scsy_warn");
 					}
 
 					// for(int i = 0 ; i < lockstruct.length; i++){
@@ -1302,14 +1349,14 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	public class mycanHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
-			Log.d("wdy","--->in mycanHandler");
+			// Log.d("wdy","--->in mycanHandler");
             if (msg.what != 0) {
 				long id = (Integer) msg.what + 2147483648L;
 				System.out.println(Long.toHexString(id));
 				if(id == 0x18FEF433){
-					Log.d("wdy","--->in 433!");
+					// Log.d("wdy","--->in 433!");
 					ArrayList<Integer> res =(ArrayList<Integer>) msg.obj;
-					//Log.d(LOG_TAG, res.toString());
+					Log.d("can", res.toString());
 					int tirepos = res.get(0);
 					int tirepre = (int)res.get(1)*8;
 					double tiretem = ((int)res.get(3)*256+(int)res.get(2))*0.03125-273+40;
@@ -1322,17 +1369,29 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 						tx[14+tirepos*2].setText(String.format("%.2f", tiretem));
 					}
 					loginfo.tireSet(tirepressure);
-					if(tLogView != null){
-						 //Log.d("tirepressure", Long.toHexString(id)+" "+tirepos+" "+String.format("%.3f",tirepre)+"kPa "+String.format("%.2f", tiretem)
-						 	//+"\u00b0"+"C "+tirev+"Pa/s "+tiretype+"\n");
-						//tLogView.append(Long.toHexString(id)+" "+tirepos+" "+tirepre+"kPa "+tiretem+"\u00b0"+"C "+tirev+"Pa/s "+tiretype+"\n");
+
+					if(tirepre==480){
+						if(warntypecnt[3] < 2){
+							loginfo.haswarnSet("1");
+							loginfo.typeSet("3");
+							warnmsgbuf.add(loginfo.logInfoGet());
+							Log.d("can","---> tire warn!");
+							loginfo.haswarnSet("0");
+							warntypecnt[3] += 1;
+						}
 					}
+					// if(tLogView != null){
+					// 	 Log.d(LOG_TAG, Long.toHexString(id)+" "+tirepos+" "+String.format("%.3f",tirepre)+"kPa "+String.format("%.2f", tiretem)
+					// 	 	+"\u00b0"+"C "+tirev+"Pa/s "+tiretype+"\n");
+					// 	tLogView.append(Long.toHexString(id)+" "+tirepos+" "+tirepre+"kPa "+tiretem+"\u00b0"+"C "+tirev+"Pa/s "+tiretype+"\n");
+					// }
 					// Compare the tirevalue and tiretemperature
 				}else if(id == 0x18FEF533){
 					if(warntypecnt[3] < 2){
 						loginfo.haswarnSet("1");
 						loginfo.typeSet("3");
 						warnmsgbuf.add(loginfo.logInfoGet());
+						Log.d("can","---> tire warn!");
 						loginfo.haswarnSet("0");
 						warntypecnt[3] += 1;
 					}
@@ -1405,6 +1464,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 							  		Intent intent=new Intent();
 									intent.setAction("action_scsy_warn");
 									LedActivity.this.getApplicationContext().sendBroadcast(intent);
+									Log.d("wdy","action_scsy_warn");
 							  		warntypecnt[4] += 1 ;
 							  	}
 							  }
@@ -1595,7 +1655,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			if(v == cb[1]){
 				if(cb[1].isChecked()){
 					for(int i = 0; i < 5; i++){
-						serialssendbuf.add(app.lockdevid[1]+"|"+"00");
+						serialssendbuf.add(app.lockdevid[1]+"|"+"00");//open
 					}
 					//mOutputStream.write(app.packdata("55 66 77 88", "00"));
 					//mOutputStream.write('\n');
@@ -1603,7 +1663,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 					//mlocalcapture.setCapturePath(2);
 				}else{
 					for(int i = 0; i < 5; i++){
-						serialssendbuf.add(app.lockdevid[1]+"|"+"01");
+						serialssendbuf.add(app.lockdevid[1]+"|"+"00");
 					}
 					//mOutputStream.write(app.packdata("55 66 77 88", "01"));
 					//mOutputStream.write('\n');
@@ -1611,7 +1671,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			}else if(v == cb[2]){
 				if(cb[2].isChecked()){
 					for(int i = 0; i < 5; i++){
-						serialssendbuf.add(app.lockdevid[2]+"|"+"00");
+						serialssendbuf.add(app.lockdevid[2]+"|"+"00");//open
 					}
 					//mOutputStream.write(app.packdata("55 66 77 88", "00"));
 					//mOutputStream.write('\n');
@@ -1619,7 +1679,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 					//mlocalcapture.setCapturePath(2);
 				}else{
 					for(int i = 0; i < 5; i++){
-						serialssendbuf.add(app.lockdevid[2]+"|"+"01");
+						serialssendbuf.add(app.lockdevid[2]+"|"+"00");
 					}
 					//mOutputStream.write(app.packdata("55 66 77 88", "01"));
 					//mOutputStream.write('\n');
@@ -1722,14 +1782,16 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		}
 	};
 	
-	// private class AwakeBroadcastReceiver extends BroadcastReceiver {
- //        @Override
- //        public void onReceive(Context context, Intent intent) {
- //            if(intent.getAction().equals(AWAKE_ACTION)){
- //                timerWake.start();  //收到广播则重新让timer复位
- //            }
- //        }
- //    }
+	private class AwakeBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(AWAKE_ACTION)){
+            	hasRecBro=true;
+            	// Toast.makeText(LedActivity.this,"Broadcast Received!",Toast.LENGTH_SHORT).show();
+            	Log.d("wdy","Broadcast Received!");
+            }
+        }
+    }
 	
 	public static boolean isRunningForeground(Context context) {
         ActivityManager activityManager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
