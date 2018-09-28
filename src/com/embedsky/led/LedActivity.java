@@ -606,7 +606,6 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		}
 	};
 
-	
 	/*
 	 * heart package upload 子线程
 	 * 线程内容：每过60s=1min周期，进入该子线程，上传心跳包。
