@@ -343,7 +343,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	        });
 		}
 		else{
-			Log.d(LOG_TAG,"cid failed!");
+			Log.d("LOG_TAG","cid failed!");
 		}
 
 		//serials initial
@@ -625,7 +625,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 				}
 			}
 			HashMap<String, String> tem = loginfo.logInfoGet();
-			// Log.d(LOG_TAG, tem.toString());
+			Log.d("wdy", tem.toString());
 			httpUtils.doPostAsyn(url, tem, new httpUtils.HttpCallBackListener() {
                 @Override
                 public void onFinish(String result) {
@@ -651,8 +651,8 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		@Override
 		public void run() {
 			if (!warnmsgbuf.isEmpty()){
-				// Log.d(LOG_TAG,"---> here is WarnpackTask");
-				// Log.d(LOG_TAG, warnmsgbuf.get(0).toString());
+				Log.d("wdy","---> here is WarnpackTask");
+				Log.d("wdy", warnmsgbuf.get(0).toString());
 				httpUtils.doPostAsyn(url, warnmsgbuf.get(0), new httpUtils.HttpCallBackListener() {
 	                @Override
 	                public void onFinish(String result) {
@@ -703,10 +703,10 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	public class WakeUpAppTask extends TimerTask{
 		@Override
 		public void run() {
-			Log.d("wdy","hasRecBro= "+hasRecBro);
+			// Log.d("wdy","hasRecBro= "+hasRecBro);
 			if(hasRecBro){
 				hasRecBro=false;
-				Log.d("wdy","isFore = "+isRunningForeground(LedActivity.this));
+				// Log.d("wdy","isFore = "+isRunningForeground(LedActivity.this));
 	        	if (!isRunningForeground(LedActivity.this)) {
 	                //获取ActivityManager
 	                ActivityManager mAm = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
@@ -731,7 +731,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	            if (intent != null) {
 	                startActivity(intent);
 	            }
-	            Log.d("wdy","open hicam end");
+	            // Log.d("wdy","open hicam end");
 			}
 		}
 	}
@@ -1302,9 +1302,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	    					tx[12].setText(String.valueOf(leakstatusval));
 	    				}
 	    				// Compare leakstatus and send 
-	    				if(leakstatusval > 95 && app.wirelessflag == 1){
+	    				Log.d("wdy","leakstatusval= "+leakstatusval+"wirelessflag"+app.wirelessflag);
+	    				if(leakstatusval > 95 /*&& app.wirelessflag == 1*/){
+	    					Log.d("wdy","in if 1");
 	    					leakstatuscnt += 1;
 	    					if(warntypecnt[2] < 1 && leakstatuscnt > 0){
+	    						Log.d("wdy","in if 2");
 	    						loginfo.haswarnSet("1");
 	    						loginfo.typeSet("2");
 	    						warnmsgbuf.add(loginfo.logInfoGet());
@@ -1312,6 +1315,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	    						warntypecnt[2] += 1;
 	    						leakstatuscnt = 0;
 	    					}
+	    					Log.d("wdy","--->leak warn!");
 	    				}else{
 	    					leakstatuscnt = 0;
 	    				}
@@ -1370,12 +1374,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 					}
 					loginfo.tireSet(tirepressure);
 
-					if(tirepre==480){
+					if(tiretype!=2 && tiretype!=4){
 						if(warntypecnt[3] < 2){
 							loginfo.haswarnSet("1");
 							loginfo.typeSet("3");
 							warnmsgbuf.add(loginfo.logInfoGet());
-							Log.d("can","---> tire warn!");
+							Log.d("can","---> 433 tire warn! type: "+tiretype);
 							loginfo.haswarnSet("0");
 							warntypecnt[3] += 1;
 						}
@@ -1391,7 +1395,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 						loginfo.haswarnSet("1");
 						loginfo.typeSet("3");
 						warnmsgbuf.add(loginfo.logInfoGet());
-						Log.d("can","---> tire warn!");
+						Log.d("can","---> 533 tire warn!");
 						loginfo.haswarnSet("0");
 						warntypecnt[3] += 1;
 					}
@@ -1788,7 +1792,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
             if(intent.getAction().equals(AWAKE_ACTION)){
             	hasRecBro=true;
             	// Toast.makeText(LedActivity.this,"Broadcast Received!",Toast.LENGTH_SHORT).show();
-            	Log.d("wdy","Broadcast Received!");
+            	// Log.d("wdy","Broadcast Received!");
             }
         }
     }
