@@ -199,10 +199,11 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	//CheckBox数组，用来存放3个test控件
 	//CheckBox[] cb = new CheckBox[3];
 	TextView[] tv = new TextView[4];
+	TextView tv_lock,tv_liquid,tv_gpsx,tv_gpsy,tv_gpsv,tv_lock_warn,tv_liquid_warn,tv_tire_warn;
 	
 	public static TextView tv_log;
 	
-	Button btn1,btn2;
+	Button btn1,btn2,btn_openlock;
 
 	private LocationManager lm1;
 
@@ -253,10 +254,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		btn_openlock = (Button) findViewById(R.id.btn_openlock);
 		btn1=(Button) findViewById(R.id.button1);
 		btn2=(Button) findViewById(R.id.button2);
-		
-		//初始化点击事件对象
-		MyClickListener myClickListern = new MyClickListener();
-		
+
 		ReGetuiApplication.ReActivity = this;
 		
 		lockstruct[0] = new lockStruct("up_front","1","0");
