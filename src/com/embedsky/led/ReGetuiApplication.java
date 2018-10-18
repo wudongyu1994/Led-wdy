@@ -230,12 +230,12 @@ public class ReGetuiApplication extends Application {
     				e.printStackTrace();
     			}
     			Log.d(LOG_TAG, (String) msg.obj);
-        		if(ReActivity.tLogView != null){
-    				ReActivity.tLogView.setText(msg.obj+"");
+        		if(ReActivity.tv_log != null){
+    				ReActivity.tv_log.append(msg.obj+"\n");
     			}
         	}else if(ReActivity != null && msg.what == 1){
-        		if(ReActivity.tLogView != null){
-    				ReActivity.tLogView.setText(msg.obj+"");
+        		if(ReActivity.tv_log != null){
+    				ReActivity.tv_log.append(msg.obj+"\n");
     			}
         	}		       	
         }

@@ -27,6 +27,22 @@
     <string name="quit">Quit</string>
     <string name= "getuidownload_info">50%</string>
     <string name= "getui_title">title</string>
+	
+	<string name="lock_status">门锁状态:</string>
+    <string name="open_lock">开锁</string>
+    <string name="liquid_status">液位状态:</string>
+    <string name="left_tire_pressure">左前胎压:</string>
+    <string name="left_tire_temp">左前胎温:</string>
+    <string name="right_tire_pressure">右前胎压:</string>
+    <string name="right_tire_temp">右前胎温:</string>
+    <string name="gpsx">GPSx :</string>
+    <string name="gpsy">GPSy :</string>
+    <string name="gpsv">GPSv :</string>
+    <string name="lock_warn">门锁异常报警:</string>
+    <string name="liquid_warn">液体泄露报警:</string>
+    <string name="tire_warn">胎温胎压报警:</string>
+    <string name="test1">测试1</string>
+    <string name="test2">测试2</string>
 
     <string name="tx_devlog">device login</string>
     <string name="tx_devip">IP</string>

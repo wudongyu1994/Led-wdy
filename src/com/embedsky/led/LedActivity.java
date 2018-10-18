@@ -197,13 +197,11 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	private boolean is_warned_wdy=false;
 
 	//CheckBox数组，用来存放3个test控件
-	CheckBox[] cb = new CheckBox[3];
-	TextView[] tx = new TextView[18];
+	//CheckBox[] cb = new CheckBox[3];
+	TextView[] tv = new TextView[4];
 	
-	public static TextView tLogView;
+	public static TextView tv_log;
 	
-	//退出按钮   
-	Button btnQuit;
 	Button btn1,btn2;
 
 	private LocationManager lm1;
@@ -233,40 +231,33 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		context = LedActivity.this.getApplicationContext();
 		app = (ReGetuiApplication) getApplicationContext();
 		
-		//获取xml中对应的控件
-		cb[1] = (CheckBox) findViewById(R.id.cb_Lock2);
-		cb[2] = (CheckBox) findViewById(R.id.cb_Lock3);
+
 		
-		tx[0] = (TextView) findViewById(R.id.tx_Lock1);
-		tx[1] = (TextView) findViewById(R.id.tx_Lock2);
-		tx[2] = (TextView) findViewById(R.id.tx_Lock3);
-		tx[3] = (TextView) findViewById(R.id.tx_Lock4);
-		tx[4] = (TextView) findViewById(R.id.tx_Lock5);
-		tx[5] = (TextView) findViewById(R.id.postview);
-		tx[11] = (TextView) findViewById(R.id.tx_leakleft);
-		tx[12] = (TextView) findViewById(R.id.tx_leakright);
-		tx[13] = (TextView) findViewById(R.id.tx_lefttire);
-		tx[14] = (TextView) findViewById(R.id.tx_lefttemp);
-		tx[15] = (TextView) findViewById(R.id.tx_righttire);
-		tx[16] = (TextView) findViewById(R.id.tx_righttemp);
-		tx[17]= (TextView)findViewById(R.id.tx_gps);
+
+		tv_lock = (TextView) findViewById(R.id.tv_lock);
+		tv_liquid = (TextView) findViewById(R.id.tv_liquid);
+		tv[0] = (TextView) findViewById(R.id.tv_left_tire);
+		tv[1] = (TextView) findViewById(R.id.tv_left_temp);
+		tv[2] = (TextView) findViewById(R.id.tv_right_tire);
+		tv[3] = (TextView) findViewById(R.id.tv_right_temp);
+		tv_gpsx = (TextView)findViewById(R.id.tv_gpsx);
+		tv_gpsy = (TextView)findViewById(R.id.tv_gpsy);
+		tv_gpsv = (TextView)findViewById(R.id.tv_gpsv);
+		tv_lock_warn = (TextView)findViewById(R.id.tv_lock_warn);
+		tv_liquid_warn = (TextView)findViewById(R.id.tv_liquid_warn);
+		tv_tire_warn = (TextView)findViewById(R.id.tv_tire_warn);
+		tv_log =(TextView) findViewById(R.id.tv_log);
+		tv_log.setSingleLine(false);
+		tv_log.setHorizontallyScrolling(false);
 		
-		tLogView =(TextView) findViewById(R.id.receiveview);
-		tLogView.setSingleLine(false);
-		tLogView.setHorizontallyScrolling(false);
-		
-		btnQuit = (Button) findViewById(R.id.btnQuit);
+		btn_openlock = (Button) findViewById(R.id.btn_openlock);
 		btn1=(Button) findViewById(R.id.button1);
 		btn2=(Button) findViewById(R.id.button2);
+		
 		//初始化点击事件对象
 		MyClickListener myClickListern = new MyClickListener();
 		
 		ReGetuiApplication.ReActivity = this;
-
-		// LED1-LED8选中/取消事件
-		for (int i = 1; i < 3; i++) {
-			cb[i].setOnClickListener(myClickListern);
-		}
 		
 		lockstruct[0] = new lockStruct("up_front","1","0");
 		lockstruct[1] = new lockStruct("up_middle","1","0");
@@ -287,26 +278,6 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			warntypecnt[i] = 0;
 		}
 		
-		// 退出按钮点击事件处理
-		btnQuit.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				//if(ledClose()){
-					finish();
-				//}
-				
-			}
-		});
-		
-		
-		// lock初始化
-		//if (!ledInit()) {
-			//new AlertDialog.Builder(this).setTitle("init lock fail").show();
-			//lock初始化失败，则使控件不可点击
-			//for (int i = 0; i < 2; i++)
-				//cb[i].setEnabled(false);
-		//}
-		
 		cnt = 0;
 		hasRecBro=false;
 		
@@ -322,7 +293,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		String cid = PushManager.getInstance().getClientid(this.getApplicationContext());
 		//String cid = new String();
 		if(cid != null){
-			//tLogView.append(cid);
+			tv_log.append("cid: "+cid+"\n");
 			cidparams.put("trucknumber","浙A1234");
 			cidparams.put("type", "100");
 			cidparams.put("cid", cid);
@@ -383,9 +354,18 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			updateLocation(location);
 			lm1.requestLocationUpdates(bestProvider, 1000, 1, locationlistener);	//1000ms=1s,1m,
 		}
-		//发送视频监控截图命令，并获取gps信息
+		
+		//发送开锁命令
+		btn_openlock.setOnClickListener(new View.OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				for(int i = 0; i < 5; i++){
+					serialssendbuf.add(app.lockdevid[1]+"|"+"00");//open
+				}
+			}
+		});
+		//发送视频监控下载命令，并获取gps信息
 		btn1.setOnClickListener(new View.OnClickListener() {
-			
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
@@ -400,7 +380,6 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		});
 		//启动hicam
 		btn2.setOnClickListener(new View.OnClickListener() {
-			
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
@@ -667,7 +646,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	           	    public void onError(Exception e) {
 	                }
 	        	});
+			}else{
+				tv_lock_warn.setText("无");
+				tv_liquid_warn.setText("无");
+				tv_tire_warn.setText("无");
 			}
+			
 		}
 	}
 
@@ -1093,16 +1077,16 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	    			if(!data.get(1).equals("05")){
 	    				// Log.d(LOG_TAG,"---> here is sehandler 07");
 	    				if(devid.equals("55667788")){	
-		    				if(data.get(9).equals("00")){
-		    					if(lockstruct[0].getlockStatus().equals("1")){
-		    						is_warned_wdy=true;
-		    					}
-								lockstruct[0].setlockStatus("0");
-								tx[0].setText(lockstruct[0].getlockName()+"\t"+lockstruct[0].getlockStatus());
-							}else if(data.get(9).equals("01")){
-								lockstruct[0].setlockStatus("1");
-								tx[0].setText(lockstruct[0].getlockName()+"\t"+lockstruct[0].getlockStatus());
-							}
+							// if(data.get(9).equals("00")){
+							// 	if(lockstruct[0].getlockStatus().equals("1")){
+							// 		is_warned_wdy=true;
+							// 	}
+							// 	lockstruct[0].setlockStatus("0");
+							// 	tv[0].setText(lockstruct[0].getlockName()+"\t"+lockstruct[0].getlockStatus());
+							// }else if(data.get(9).equals("01")){
+							// 	lockstruct[0].setlockStatus("1");
+							// 	tv[0].setText(lockstruct[0].getlockName()+"\t"+lockstruct[0].getlockStatus());
+							// }
 						}else if(devid.equals("55667789")){
 							if(data.get(9).equals("00")){
 								Log.d(LOG_TAG,"---> before:"+lockstruct[3].getlockStatus());
@@ -1111,34 +1095,33 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		    						Log.d(LOG_TAG,"--->is_warned_wdy=true;");
 		    					}
 								lockstruct[3].setlockStatus("0");
-								tx[3].setText(lockstruct[3].getlockName()+"\t"+lockstruct[3].getlockStatus());
+								tv_lock.setText(lockstruct[3].getlockName()+"\t"+(lockstruct[3].getlockStatus())?"closed":"opened");
 							}else if(data.get(9).equals("01")){
 								lockstruct[3].setlockStatus("1");
-								tx[3].setText(lockstruct[3].getlockName()+"\t"+lockstruct[3].getlockStatus());
+								tv_lock.setText(lockstruct[3].getlockName()+"\t"+(lockstruct[3].getlockStatus())?"closed":"opened");
 							}
 							
 						}else if(devid.equals("55667790")){
-							if(data.get(9).equals("00")){
-		    					if(lockstruct[4].getlockStatus().equals("1"))
-		    						is_warned_wdy=true;
-								lockstruct[4].setlockStatus("0");
-								tx[4].setText(lockstruct[4].getlockName()+"\t"+lockstruct[4].getlockStatus());
-							}else if(data.get(9).equals("01")){
-								lockstruct[4].setlockStatus("1");
-								tx[4].setText(lockstruct[4].getlockName()+"\t"+lockstruct[4].getlockStatus());
-							}
-							
+							// if(data.get(9).equals("00")){
+		    	// 				if(lockstruct[4].getlockStatus().equals("1"))
+		    	// 					is_warned_wdy=true;
+							// 	lockstruct[4].setlockStatus("0");
+							// 	tv[4].setText(lockstruct[4].getlockName()+"\t"+lockstruct[4].getlockStatus());
+							// }else if(data.get(9).equals("01")){
+							// 	lockstruct[4].setlockStatus("1");
+							// 	tv[4].setText(lockstruct[4].getlockName()+"\t"+lockstruct[4].getlockStatus());
+							// }							
 						}
 	    			}else if(data.get(1).equals("05")){
 	    				// Log.d(LOG_TAG,"---> here is sehandler 05");
 	    				opparams.put("trucknumber", "浙A1234");
 	    				if(devid.equals("55667788")){	
-		    				if(data.get(9).equals("00")){
-								//TODO
-							}else{
-								lockstruct[0].setlockStatus("1");
-								tx[0].setText(lockstruct[0].getlockName()+"\t"+lockstruct[0].getlockStatus());
-							}
+							// if(data.get(9).equals("00")){
+							// 	//TODO
+							// }else{
+							// 	lockstruct[0].setlockStatus("1");
+							// 	tv[0].setText(lockstruct[0].getlockName()+"\t"+lockstruct[0].getlockStatus());
+							// }
 						}else if(devid.equals("55667789")){
 							if(data.get(9).equals("00")){
 								// opparams.put("type", "0");
@@ -1177,7 +1160,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 							}else{
 								lockstatustemp[3] = "1";
 								lockstruct[3].setlockStatus("1");
-								tx[3].setText(lockstruct[3].getlockName()+"\t"+lockstruct[3].getlockStatus());
+								tv_lock.setText(lockstruct[3].getlockName()+"\t"+(lockstruct[3].getlockStatus())?"closed":"opened");
 							}
 						}else if(devid.equals("55667790")){
 							if(data.get(9).equals("00")){
@@ -1217,7 +1200,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 							}else{
 								lockstatustemp[4] = "1";
 								lockstruct[4].setlockStatus("1");
-								tx[4].setText(lockstruct[4].getlockName()+"\t"+lockstruct[4].getlockStatus());
+								// tv[4].setText(lockstruct[4].getlockName()+"\t"+lockstruct[4].getlockStatus());
 							}
 						}
 	    			}
@@ -1232,6 +1215,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 						loginfo.haswarnSet("1");
 						loginfo.typeSet("1");
 						warnmsgbuf.add(loginfo.logInfoGet());
+						tv_lock_warn.setText("异常");
 						loginfo.haswarnSet("0");
 						Log.d(LOG_TAG,"--->warnmsgbuf added");
 						//let camera app catch videos
@@ -1240,67 +1224,10 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 						LedActivity.this.getApplicationContext().sendBroadcast(intent);
 				Log.d("wdy","action_scsy_warn");
 					}
-
-					// for(int i = 0 ; i < lockstruct.length; i++){
-					// 	if(!lockstruct[i].getlockStatus().equals(lockstatustemp[i])){
-					// 		lockwarncnt += 1 ;
-					// 		break;
-					// 	}
-					// 	if( i == lockstruct.length-1) {
-					// 		lockwarncnt = 0;
-					// 	}
-					// }
-					// if(app.lockoperateflag == 0){
-					// 	if(lockwarncnt > 0 && app.wirelessflag == 1){
-					// 		if(warntypecnt[1] < 1) {
-					// 			loginfo.typeflagSet("1");
-					// 			//sidcnt = 0;
-					// 			//mlocalcapture.setCapturePath(0);
-					// 			Intent intent=new Intent();
-					// 			intent.setAction("action_scsy_warn");
-					// 			LedActivity.this.getApplicationContext().sendBroadcast(intent);
-					// 			warntypecnt[1] += 1;
-					// 		}
-					// 		lockwarncnt = 0;
-					// 	}
-					// }else{
-						// if(lockwarncnt > 0) {
-						// 	app.reparams.put("operate", "1"); //operate failed
-						// 	lockwarncnt = 0;
-						// }else{
-						// 	app.reparams.put("operate", "0"); //operate success
-						// }
-						// Log.d(LOG_TAG, app.reparams.toString());
-						// httpUtils.doPostAsyn(app.url, app.reparams, new httpUtils.HttpCallBackListener() {
-				  //           @Override
-				  //           public void onFinish(String result) {
-				  //               Message message = new Message();
-				  //               message.what = MESSAGE_LOCKCMDOPERATE;
-				  //               message.obj=result;
-				  //               handler.sendMessage(message);  
-				  //           }
-
-				  //           @Override
-				  //           public void onError(Exception e) {
-				  //           }
-
-					 //    });
-					 //    app.lockoperateflag = 0;
-					// }
-					
-
-
-								
-					
 	    		}else if(flag.equals("01")){
-	    			//if(devid.equals("55667788")){
 	    				int leakstatusval = Integer.parseInt(data.get(9),16);
 	    				loginfo.leakstatusSet(String.valueOf(leakstatusval));
-	    				if(devid.equals("55667789")){
-	    					tx[11].setText(String.valueOf(leakstatusval));
-	    				}else if(devid.equals("55667790")){
-	    					tx[12].setText(String.valueOf(leakstatusval));
-	    				}
+	    				tv_liquid.setText(String.valueOf(leakstatusval));
 	    				// Compare leakstatus and send 
 	    				Log.d("wdy","leakstatusval= "+leakstatusval+"wirelessflag"+app.wirelessflag);
 	    				if(leakstatusval > 95 /*&& app.wirelessflag == 1*/){
@@ -1311,6 +1238,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	    						loginfo.haswarnSet("1");
 	    						loginfo.typeSet("2");
 	    						warnmsgbuf.add(loginfo.logInfoGet());
+								tv_liquid_warn.setText("异常");
 								loginfo.haswarnSet("0");
 	    						warntypecnt[2] += 1;
 	    						leakstatuscnt = 0;
@@ -1319,30 +1247,8 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	    				}else{
 	    					leakstatuscnt = 0;
 	    				}
-	    			//}
-	    		}else if(flag.equals("02")){//weight data
-
 	    		}
-	    // 		else if(flag.equals("03")){//power 
-	    // 			// powerval upload to loginfo
-	    // 			int powerval = Integer.parseInt(data.get(9),16);
-	    // 			// Log.d("Serials", "powerval: "+String.valueOf(powerval));
-	    // 			if(devid.equals("55667788")){	
-					// 	lockstruct[0].setpowerVal(String.valueOf(powerval));
-					// 	tx[6].setText("\t"+lockstruct[0].getpowerVal());
-					// }else if(devid.equals("55667789")){
-					// 	lockstruct[3].setpowerVal(String.valueOf(powerval));
-					// 	tx[9].setText("\t"+lockstruct[3].getpowerVal());
-					// }else if(devid.equals("55667790")){
-					// 	lockstruct[4].setpowerVal(String.valueOf(powerval));
-					// 	tx[10].setText("\t"+lockstruct[4].getpowerVal());
-					// }
-	    // 			if(powerval < 10){
-	    // 				tLogView.setText("warn powerval: "+devid+String.valueOf(powerval));
-	    // 			}
-	    // 		}	
     		}
-    		
     	}
     };	
 
@@ -1368,9 +1274,9 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 					int tiretype = res.get(7) >> 5;
 					if(tirepos < tirepressure.length){
 						tirepressure[tirepos].settireVal(String.valueOf(tirepre));
-						tx[13+tirepos*2].setText(String.valueOf(tirepre));
+						tv[tirepos*2].setText(String.valueOf(tirepre));
 						tirepressure[tirepos].settireTempVal(String.format("%.2f", tiretem));
-						tx[14+tirepos*2].setText(String.format("%.2f", tiretem));
+						tv[1+tirepos*2].setText(String.format("%.2f", tiretem));
 					}
 					loginfo.tireSet(tirepressure);
 
@@ -1379,15 +1285,16 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 							loginfo.haswarnSet("1");
 							loginfo.typeSet("3");
 							warnmsgbuf.add(loginfo.logInfoGet());
+							tv_tire_warn.setText("异常");
 							Log.d("can","---> 433 tire warn! type: "+tiretype);
 							loginfo.haswarnSet("0");
 							warntypecnt[3] += 1;
 						}
 					}
-					// if(tLogView != null){
+					// if(tv_log != null){
 					// 	 Log.d(LOG_TAG, Long.toHexString(id)+" "+tirepos+" "+String.format("%.3f",tirepre)+"kPa "+String.format("%.2f", tiretem)
 					// 	 	+"\u00b0"+"C "+tirev+"Pa/s "+tiretype+"\n");
-					// 	tLogView.append(Long.toHexString(id)+" "+tirepos+" "+tirepre+"kPa "+tiretem+"\u00b0"+"C "+tirev+"Pa/s "+tiretype+"\n");
+					// 	tv_log.append(Long.toHexString(id)+" "+tirepos+" "+tirepre+"kPa "+tiretem+"\u00b0"+"C "+tirev+"Pa/s "+tiretype+"\n");
 					// }
 					// Compare the tirevalue and tiretemperature
 				}else if(id == 0x18FEF533){
@@ -1395,6 +1302,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 						loginfo.haswarnSet("1");
 						loginfo.typeSet("3");
 						warnmsgbuf.add(loginfo.logInfoGet());
+						tv_tire_warn.setText("异常");
 						Log.d("can","---> 533 tire warn!");
 						loginfo.haswarnSet("0");
 						warntypecnt[3] += 1;
@@ -1407,12 +1315,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 						//TODO pid add
 						//case 0x04: int loadval = (int)res.get(3)
 						case 0x05: int temp = (int)res.get(3)-40;
-							  if(tLogView != null){
+							  if(tv_log != null){
 								//Log.d("OBD", Long.toHexString(id)+" "+Integer.toHexString(pid)+" "+String.valueOf(temp)+"\u00b0"+"C\n");
 							  }
 							  break;
 						case 0x0C: int w = ((int)res.get(3)*256+(int)res.get(4))/4;
-							  if(tLogView != null){
+							  if(tv_log != null){
 								//Log.d("OBD", Long.toHexString(id)+" "+Integer.toHexString(pid)+" "+String.valueOf(w)+"rpm\n");
 							  }
 							  break;
@@ -1438,7 +1346,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 							  	}
 							  }
 							  
-							  if(tLogView != null){
+							  if(tv_log != null){
 								//Log.d("OBD", Long.toHexString(id)+" "+Integer.toHexString(pid)+" "+String.valueOf(v)+"km/s\n");
 							  }
 							  break;
@@ -1449,7 +1357,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 							  }else{
 							  	loginfo.distanceSet(distance-distance0);
 							  }
-							  if(tLogView != null){
+							  if(tv_log != null){
 								//Log.d("OBD", Long.toHexString(id)+" "+Integer.toHexString(pid)+" "+String.valueOf(distance)+"km\n");
 							  }
 							  break;
@@ -1473,15 +1381,15 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 							  	}
 							  }
 							  fuelleveltemp = fuelLevel;
-							  if(tLogView != null){
+							  if(tv_log != null){
 								//Log.d("OBD", Long.toHexString(id)+" "+Integer.toHexString(pid)+" "+String.valueOf(fuelLevel)+"%\n");
 							  }
 							  break;
 						default: break;
 					}
 				}else{
-					if(tLogView != null){
-						//tLogView.append(Long.toHexString(id)+"\n");
+					if(tv_log != null){
+						//tv_log.append(Long.toHexString(id)+"\n");
 						//Log.d(LOG_TAG, Long.toHexString(id)+"\n");
 					}
 				}
@@ -1504,11 +1412,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	        		//Toast.makeText(LedActivity.this,s,Toast.LENGTH_SHORT).show();
 					//System.out.println(s);
 					Log.d(LOG_TAG, "heartpacktask"+s);
-					if(s != null){				
-						tx[5].setText(s+String.valueOf(cnt));	
-						cnt += 1;
-						//Toast.makeText(LedActivity.this,s,Toast.LENGTH_SHORT).show();
-					} 
+					tv_log.append("heartpacktask"+s+"\n");
+					// if(s != null){				
+					// 	tv[5].setText(s+String.valueOf(cnt));	
+					// 	cnt += 1;
+					// 	//Toast.makeText(LedActivity.this,s,Toast.LENGTH_SHORT).show();
+					// } 
     			}break;
     			case MESSAGE_FILEUPLOAD:{
     				String s =(String) msg.obj;
@@ -1624,76 +1533,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			}
 		}
 	};
-    
-	// 自定义的事件监听器类，用来处理CheckBox选中和取消事件
-	public class MyClickListener implements OnClickListener {
-		@Override
-		public void onClick(View v) {
-			//遍历数组，判断是哪个test控件被选中
-			
-			// if (v == cb[0]) {
-			// 	//根据选中/取消状态来控制test的开/关
-			// 	//controlLed(i + 1, cb[i].isChecked());
-			// 	if(cb[0].isChecked()){
-			// 		//mlocalcapture.setCapturePath(0);
-			// 		loginfo.speedSet(150);
-			// 		HashMap<String, String> tem = loginfo.logInfoGet();
-			// 		// Log.d(LOG_TAG, tem.toString());
-			// 		httpUtils.doPostAsyn(url, tem, new httpUtils.HttpCallBackListener() {
-   //                  @Override
-   //                  public void onFinish(String result) {
-   //                 	Message message = new Message();
-   //                 		message.what = MESSAGE_HEARTPACKAGE;
-   //                  	message.obj = result;
-   //                  	handler.sendMessage(message);
-   //                  }
-
-   //                  @Override
-   //             	    public void onError(Exception e) {
-   //                  }
-		 //        });
-			// 		loginfo.speedSet(0);
-			// 	}
-				
-			// }else 
-			if(v == cb[1]){
-				if(cb[1].isChecked()){
-					for(int i = 0; i < 5; i++){
-						serialssendbuf.add(app.lockdevid[1]+"|"+"00");//open
-					}
-					//mOutputStream.write(app.packdata("55 66 77 88", "00"));
-					//mOutputStream.write('\n');
-				
-					//mlocalcapture.setCapturePath(2);
-				}else{
-					for(int i = 0; i < 5; i++){
-						serialssendbuf.add(app.lockdevid[1]+"|"+"00");
-					}
-					//mOutputStream.write(app.packdata("55 66 77 88", "01"));
-					//mOutputStream.write('\n');
-				}
-			}else if(v == cb[2]){
-				if(cb[2].isChecked()){
-					for(int i = 0; i < 5; i++){
-						serialssendbuf.add(app.lockdevid[2]+"|"+"00");//open
-					}
-					//mOutputStream.write(app.packdata("55 66 77 88", "00"));
-					//mOutputStream.write('\n');
-				
-					//mlocalcapture.setCapturePath(2);
-				}else{
-					for(int i = 0; i < 5; i++){
-						serialssendbuf.add(app.lockdevid[2]+"|"+"00");
-					}
-					//mOutputStream.write(app.packdata("55 66 77 88", "01"));
-					//mOutputStream.write('\n');
-				}
-			}
-			
-			return;
-		}
-	}
-
+	
 	//init USB to serials
 	private void initUSB() {
 		UsbDevice device = ch340AndroidDriver.EnumerateDevice();// 枚举设备，获取USB设备
@@ -1745,14 +1585,15 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
      */
 	private void updateLocation(Location location){
 		if(location != null){
-			//tLogView.append(location.toString());
+			//tv_log.append(location.toString());
 			gpsx = String.format("%.9f", location.getLongitude());
 			gpsy = String.format("%.9f", location.getLatitude());
 			speed = location.getSpeed();
-			String gpsInfo="gpsx: "+gpsx+" "+"gpsy: "+gpsy+" "+"gpsspeed: "+speed;
-			// Log.d("GPS", gpsInfo);
-			Toast.makeText(LedActivity.this, gpsInfo, Toast.LENGTH_SHORT).show();
-			tx[17].setText(gpsInfo);
+			//String gpsInfo="gpsx: "+gpsx+" "+"gpsy: "+gpsy+" "+"gpsspeed: "+speed;
+			//Toast.makeText(LedActivity.this, gpsInfo, Toast.LENGTH_SHORT).show();
+			tv_gpsx.setText(gpsx);
+			tv_gpsy.setText(gpsy);
+			tv_gpsv.setText(speed);
 			loginfo.gpsSet(gpsx,gpsy);
 			loginfo.gpsspeedSet((int)speed);
 		}else{
