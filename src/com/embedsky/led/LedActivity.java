@@ -1269,14 +1269,14 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 					Log.d("can", res.toString());
 					int tirepos = res.get(0);
 					int tirepre = (int)res.get(1)*8;
-					double tiretem = ((int)res.get(3)*256+(int)res.get(2))*0.03125-273+40;
+					double tiretem = ((int)res.get(3)*256+(int)res.get(2))*0.03125-273;
 					double tirev = ((int)res.get(6)*256+(int)res.get(5))*0.1;
 					int tiretype = res.get(7) >> 5;
 					if(tirepos < tirepressure.length){
 						tirepressure[tirepos].settireVal(String.valueOf(tirepre));
 						tv[tirepos*2].setText(String.valueOf(tirepre));
 						tirepressure[tirepos].settireTempVal(String.format("%.2f", tiretem));
-						tv[1+tirepos*2].setText(String.format("%.2f", tiretem));
+						tv[1+tirepos*2].setText(String.format("%.2f", tiretem)+" `C");
 					}
 					loginfo.tireSet(tirepressure);
 
