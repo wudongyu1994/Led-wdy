@@ -113,6 +113,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	private final int MESSAGE_USB_UNINSERT = 0x108;
 	private final int MESSAGE_OPPARAMS = 0x109;
 	private final int MESSAGE_DELAY = 0x201;
+	private final int MESSAGE_NOWARN = 0x202;
 
 	//初始化led
 	public static native boolean ledInit();
@@ -645,9 +646,9 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	                }
 	        	});
 			}else{
-				tv_lock_warn.setText("无");
-				tv_liquid_warn.setText("无");
-				tv_tire_warn.setText("无");
+				Message message = new Message();
+           		message.what = MESSAGE_NOWARN;
+            	handler.sendMessage(message);
 			}
 			
 		}
@@ -1093,10 +1094,11 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 		    						Log.d(LOG_TAG,"--->is_warned_wdy=true;");
 		    					}
 								lockstruct[3].setlockStatus("0");
-								tv_lock.setText(lockstruct[3].getlockName()+"\t"+(lockstruct[3].getlockStatus())?"closed":"opened");
+								tv_lock.setText(lockstruct[3].getlockName()+"\t"+"opened");
+								//tv_lock.setText(lockstruct[3].getlockName()+"\t"+(lockstruct[3].getlockStatus().equals("1"))?"closed":"opened");
 							}else if(data.get(9).equals("01")){
 								lockstruct[3].setlockStatus("1");
-								tv_lock.setText(lockstruct[3].getlockName()+"\t"+(lockstruct[3].getlockStatus())?"closed":"opened");
+								tv_lock.setText(lockstruct[3].getlockName()+"\t"+"closed");
 							}
 							
 						}else if(devid.equals("55667790")){
@@ -1158,7 +1160,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 							}else{
 								lockstatustemp[3] = "1";
 								lockstruct[3].setlockStatus("1");
-								tv_lock.setText(lockstruct[3].getlockName()+"\t"+(lockstruct[3].getlockStatus())?"closed":"opened");
+								tv_lock.setText(lockstruct[3].getlockName()+"\t"+"closed");
 							}
 						}else if(devid.equals("55667790")){
 							if(data.get(9).equals("00")){
@@ -1460,6 +1462,11 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     				String s =(String) msg.obj;
     				Log.d(LOG_TAG, "warn"+s);
     			}break;
+    			case MESSAGE_NOWARN:{
+					tv_lock_warn.setText("无");
+					tv_liquid_warn.setText("无");
+					tv_tire_warn.setText("无");
+    			}break;
     			case MESSAGE_PARAMSPACKAGE:{
     				String s =(String) msg.obj;
     				Log.d(LOG_TAG, "params"+s);
@@ -1591,7 +1598,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			//Toast.makeText(LedActivity.this, gpsInfo, Toast.LENGTH_SHORT).show();
 			tv_gpsx.setText(gpsx);
 			tv_gpsy.setText(gpsy);
-			tv_gpsv.setText(speed);
+			tv_gpsv.setText(speed+"");
 			loginfo.gpsSet(gpsx,gpsy);
 			loginfo.gpsspeedSet((int)speed);
 		}else{
