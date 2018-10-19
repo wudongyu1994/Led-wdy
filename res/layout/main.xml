@@ -1,209 +1,285 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:layout_height="fill_parent" >
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp" >
-
-        <Button
-            android:id="@+id/button1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <CheckBox
-            android:id="@+id/cb_Lock2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:text="@string/cb_Lock2" />
-        
-        <CheckBox 
-            android:id="@+id/cb_Lock3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:text="@string/cb_Lock3" />
-
-        <Button
-            android:id="@+id/btnQuit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/quit" />
-
-    </LinearLayout>
-
-    
-    <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-        
         <LinearLayout
             android:layout_width="match_parent"
-        	android:layout_height="wrap_content"
-   		 	android:orientation="horizontal" >
-            <TextView
-                android:id="@+id/tx_Lock1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.2"
-                android:text="@string/tx_Lock1"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-            <TextView
-                android:id="@+id/tx_Lock2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.2"
-                android:text="@string/tx_Lock2"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-            
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
             <TextView
-                android:id="@+id/tx_Lock3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.2"
-                android:text="@string/tx_Lock3"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-            
-
-            <TextView
-                android:id="@+id/tx_Lock4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.2"
-                android:text="@string/tx_Lock4"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-            
-
-            <TextView
-                android:id="@+id/tx_Lock5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.2"
-                android:text="@string/tx_Lock5"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-            </LinearLayout>
-            
-        
-        <LinearLayout 
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            
-            <TextView
-                android:id="@+id/tx_leakleft"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="@string/tx_leakleft"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-            
-            <TextView 
-                android:id="@+id/tx_leakright"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight= "0.5"
-                android:text="@string/tx_leakright"
-                android:textAppearance="?android:attr/textAppearanceLarge"/>
-            
-        </LinearLayout>
-        
-        <LinearLayout 
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            
-            <TextView
-                android:id="@+id/tx_lefttire"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="@string/tx_lefttire"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-            
-            <TextView 
-                android:id="@+id/tx_lefttemp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight= "0.5"
-                android:text="@string/tx_lefttemp"
-                android:textAppearance="?android:attr/textAppearanceLarge"/>
-            
-        </LinearLayout>
-        
-        <LinearLayout 
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            
-            <TextView
-                android:id="@+id/tx_righttire"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="@string/tx_righttire"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-            
-            <TextView 
-                android:id="@+id/tx_righttemp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight= "0.5"
-                android:text="@string/tx_righttemp"
-                android:textAppearance="?android:attr/textAppearanceLarge"/>
-
-            
-            
-        </LinearLayout>
-
-        <TextView 
-                android:id="@+id/tx_gps"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/tx_gps"
-                android:textAppearance="?android:attr/textAppearanceLarge"/>
-                
-       
-        <TextView
-            android:id="@+id/postview"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:text="@null"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-       
-        <ScrollView
-            android:id="@+id/scrollView1"
-            android:layout_width="match_parent"
-            android:layout_height="100dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical" >
+                android:layout_weight="2"
+                android:gravity="center"
+                android:text="@string/lock_status"
+                android:textSize="12sp" />
 
-                <TextView
-                    android:id="@+id/receiveview"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@null"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
+            <TextView
+                android:id="@+id/tv_lock"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center" />
 
-            </LinearLayout>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="center" />
 
-        </ScrollView>
+            <Button
+                android:id="@+id/btn_openlock"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:text="@string/open_lock"
+                android:gravity="center" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:text="@string/liquid_status"
+                android:textSize="12sp" />
+            <TextView
+                android:id="@+id/tv_liquid"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="5"
+                android:gravity="center" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:text="@string/left_tire_pressure"
+                android:textSize="12sp" />
+            <TextView
+                android:id="@+id/tv_left_tire"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:text="@string/left_tire_temp"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_left_temp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:text="@string/right_tire_pressure"
+                android:textSize="12sp" />
+            <TextView
+                android:id="@+id/tv_right_tire"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:text="@string/right_tire_temp"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_right_temp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/gpsx" />
+            <TextView
+                android:id="@+id/tv_gpsx"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="4"
+                android:gravity="center_vertical" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/gpsy" />
+            <TextView
+                android:id="@+id/tv_gpsy"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="4"
+                android:gravity="center_vertical" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/gpsv" />
+            <TextView
+                android:id="@+id/tv_gpsv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="4"
+                android:gravity="center_vertical" />
+        </LinearLayout>
 
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/lock_warn"/>
+            <TextView
+                android:id="@+id/tv_lock_warn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/red"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/liquid_warn"/>
+            <TextView
+                android:id="@+id/tv_liquid_warn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/red"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/tire_warn"/>
+            <TextView
+                android:id="@+id/tv_tire_warn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/red"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2">
+            <Button
+                android:id="@+id/button1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/test1"/>
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/test2"/>
+        </LinearLayout>
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="8">
 
-
-        
-
-
+            <TextView
+                android:id="@+id/tv_scroll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </ScrollView>
+    </LinearLayout>
 </LinearLayout>
