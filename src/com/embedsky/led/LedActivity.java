@@ -114,6 +114,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	private final int MESSAGE_OPPARAMS = 0x109;
 	private final int MESSAGE_DELAY = 0x201;
 	private final int MESSAGE_NOWARN = 0x202;
+	private final int MESSAGE_REQUEST =0X203;
 
 	//初始化led
 	public static native boolean ledInit();
@@ -130,10 +131,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 	private String picurl = "http://120.76.219.196:85/file/upload";
 	private String testurl = "http://120.76.219.196:85/test/getTruckLogResp";
 	private String opurl = "http://120.76.219.196:85/lock/request_car";
+	private String requesturl = "http://120.76.219.196:85/lock/request_car";
 
 	private static HashMap<String, String> params = new HashMap<String, String>();
 	private static HashMap<String, String> cidparams = new HashMap<String, String>();	//请查询“自贡三辰实业危化品 文档”里的“个推cid上传”
 	private static HashMap<String, String> opparams = new HashMap<String, String>();
+	private static HashMap<String, String> requestparams = new HashMap<String, String>();
 	protected static logInfo loginfo = new logInfo(); //data package uploaded
 	private static int[] warntypecnt = new int[10];
 	protected static LinkedList<HashMap<String, String>> warnmsgbuf = new LinkedList<HashMap<String, String>>();
@@ -296,7 +299,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 			cidparams.put("trucknumber","浙A1234");
 			cidparams.put("type", "100");
 			cidparams.put("cid", cid);
-			// Log.d(LOG_TAG, cid);
+			Log.d("cid", "cid: "+cid);
 			
 			httpUtils.doPostAsyn(getuiurl, cidparams, new httpUtils.HttpCallBackListener() {
 	            @Override
@@ -309,11 +312,12 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 
 	            @Override
 	            public void onError(Exception e) {
+	            	Log.d("cid","cid post error!");
 	            }
 	        });
 		}
 		else{
-			Log.d("LOG_TAG","cid failed!");
+			Log.d("cid","cid failed!");
 		}
 
 		//serials initial
@@ -1225,28 +1229,73 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
 				Log.d("wdy","action_scsy_warn");
 					}
 	    		}else if(flag.equals("01")){
-	    				int leakstatusval = Integer.parseInt(data.get(9),16);
-	    				loginfo.leakstatusSet(String.valueOf(leakstatusval));
-	    				tv_liquid.setText(String.valueOf(leakstatusval));
-	    				// Compare leakstatus and send 
-	    				Log.d("wdy","leakstatusval= "+leakstatusval+"wirelessflag"+app.wirelessflag);
-	    				if(leakstatusval > 95 /*&& app.wirelessflag == 1*/){
-	    					Log.d("wdy","in if 1");
-	    					leakstatuscnt += 1;
-	    					if(warntypecnt[2] < 1 && leakstatuscnt > 0){
-	    						Log.d("wdy","in if 2");
-	    						loginfo.haswarnSet("1");
-	    						loginfo.typeSet("2");
-	    						warnmsgbuf.add(loginfo.logInfoGet());
-								tv_liquid_warn.setText("异常");
-								loginfo.haswarnSet("0");
-	    						warntypecnt[2] += 1;
-	    						leakstatuscnt = 0;
-	    					}
-	    					Log.d("wdy","--->leak warn!");
-	    				}else{
-	    					leakstatuscnt = 0;
-	    				}
+    				int leakstatusval = Integer.parseInt(data.get(9),16);
+    				loginfo.leakstatusSet(String.valueOf(leakstatusval));
+    				tv_liquid.setText(String.valueOf(leakstatusval));
+    				// Compare leakstatus and send 
+    				Log.d("wdy","leakstatusval= "+leakstatusval+"wirelessflag"+app.wirelessflag);
+    				if(leakstatusval > 95 /*&& app.wirelessflag == 1*/){
+    					Log.d("wdy","in if 1");
+    					leakstatuscnt += 1;
+    					if(warntypecnt[2] < 1 && leakstatuscnt > 0){
+    						Log.d("wdy","in if 2");
+    						loginfo.haswarnSet("1");
+    						loginfo.typeSet("2");
+    						warnmsgbuf.add(loginfo.logInfoGet());
+							tv_liquid_warn.setText("异常");
+							loginfo.haswarnSet("0");
+    						warntypecnt[2] += 1;
+    						leakstatuscnt = 0;
+    					}
+    					Log.d("wdy","--->leak warn!");
+    				}else{
+    					leakstatuscnt = 0;
+    				}
+	    		}
+	    		else if(flag.equals("04")){
+	    			//code here
+	    	/*if(cid != null){
+			tv_log.append("cid: "+cid+"\n");
+			cidparams.put("trucknumber","浙A1234");
+			cidparams.put("type", "100");
+			cidparams.put("cid", cid);
+			// Log.d(LOG_TAG, cid);
+			
+			httpUtils.doPostAsyn(getuiurl, cidparams, new httpUtils.HttpCallBackListener() {
+	            @Override
+	            public void onFinish(String result) {
+	                Message message = new Message();
+	                message.what = MESSAGE_GETUI;
+	                message.obj=result;
+	                handler.sendMessage(message);
+	            }
+
+	            @Override
+	            public void onError(Exception e) {
+	            }
+	        });
+		}
+		else{
+			Log.d("LOG_TAG","cid failed!");
+		}*/
+
+					requestparams.put("trucknumber","浙A1234");
+					requestparams.put("type","0");
+					requestparams.put("requestdesc","0");
+
+					httpUtils.doPostAsyn(requesturl, requestparams, new httpUtils.HttpCallBackListener() {
+			            @Override
+			            public void onFinish(String result) {
+			                Message message = new Message();
+			                message.what = MESSAGE_REQUEST;
+			                message.obj=result;
+			                handler.sendMessage(message);
+			            }
+			            @Override
+			            public void onError(Exception e) {
+			            }
+	        		});
+					tv_log.append("requestparams sent!\n");
 	    		}
     		}
     	}
@@ -1456,7 +1505,7 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     			}break;
     			case MESSAGE_GETUI:{
     				String s =(String) msg.obj;
-    				Log.d(LOG_TAG, "getuicidup"+s);
+    				Log.d("cid", "getuicidup"+s);
     			}break;
     			case MESSAGE_WARNPACKAGE:{
     				String s =(String) msg.obj;
@@ -1490,6 +1539,10 @@ public class LedActivity extends Activity /*implements mPictureCallBack*/{
     			case MESSAGE_USB_UNINSERT: {
     				ch340AndroidDriver.CloseDevice();
     				Log.d(LOG_TAG, "CloseDevice");
+    			}break;
+    			case MESSAGE_REQUEST: {
+    				String s =(String) msg.obj;
+    				Log.d(LOG_TAG, "requestparams"+s);
     			}break;
     			default: break;
     		}
